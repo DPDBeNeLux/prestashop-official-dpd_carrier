@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>dpdcarrier</name>
+	<displayName><![CDATA[DPD Carrier 2.0]]></displayName>
+	<version><![CDATA[0.2.0]]></version>
+	<description><![CDATA[Start shipping with DPD today. A parcel 2home, 2shop or between your own stores? No problem!]]></description>
+	<author><![CDATA[Michiel Van Gucht]]></author><author_uri><![CDATA[https://be.linkedin.com/in/mvgucht]]></author_uri>
+	<tab><![CDATA[shipping_logistics]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall the DPD Carrier Module?]]></confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>

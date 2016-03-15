@@ -1,0 +1,583 @@
+/* ==================== */
+/* ==== Switch Css ==== */
+/* ==================== */
+
+#dpd-main-container .onoffswitch {
+    position: relative; width: 90px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+
+#dpd-main-container .onoffswitch-checkbox {
+    display: none;
+}
+
+#dpd-main-container .onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+
+#dpd-main-container .onoffswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+
+#dpd-main-container .onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    box-sizing: border-box;
+}
+
+#dpd-main-container .onoffswitch-inner:before {
+    padding-left: 10px;
+    background-color: #DC0032; color: #FFFFFF;
+}
+
+#dpd-main-container .onoffswitch-inner:after {
+    padding-right: 10px;
+    background-color: #E6E7E7; color: #414042;
+    text-align: right;
+}
+
+#dpd-main-container .onoffswitch-switch {
+    display: block; width: 20px; height: 20px; margin: 5px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 56px;
+    border: 2px solid #999999; border-radius: 20px;
+    transition: all 0.3s ease-in 0s; 
+}
+
+#dpd-main-container .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+
+#dpd-main-container .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px; 
+}
+
+/******/
+
+#dpd-main-container {
+    margin: 0;
+    min-height: 100%;
+    min-width: 930px;
+    width: 100%;
+    font-family: 'pluto_sans_dpdlight',sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 13px;
+    line-height: 18px;
+    color: #414042;
+    display: block;
+}
+
+#dpd-main-container #dpd-header{
+    position: relative;
+    background-color: #fff;
+}
+
+#dpd-main-container a{
+    outline: none;
+    background: transparent;
+    text-decoration: none;
+}
+
+#dpd-main-container p,
+#dpd-main-container h1,
+#dpd-main-container a{
+    color: #414042;
+}
+
+#dpd-main-container h1 {
+    ont-weight: 400;
+    font-style: normal;
+    font-size: 23px;
+    line-height: 28px;
+}
+
+#dpd-main-container ul{
+    list-style-type: none;
+}
+
+#dpd-main-container ul,
+#dpd-main-container menu,
+#dpd-main-container dir{
+    display: block;
+    list-style-type: disc;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 40px;
+}
+
+#dpd-main-container .dpdLogo,
+#dpd-content div.dpdOpenBox 
+{
+    background: url('../img/icons-s4dfea83d67.png') no-repeat;
+}
+
+#dpd-main-container div,
+#dpd-header nav.header {
+    display: block;
+}
+
+#dpd-main-container #dpd-header {
+    position: relative;
+    background-color: #fff;
+}
+
+#dpd-header .centered {
+    height: 147px;
+    width: 930px;
+    margin: 0 auto;
+}
+
+#dpd-header a.dpdLogo {
+    height: 62px;
+    width: 141px;
+    margin-top: 32px;
+    float: left;
+    background-position: 0 -1470px;
+    text-indent: -9999em;
+}
+
+#dpd-header h1 {
+    clear: right;
+    float: right;
+    font-family: 'pluto_sans_dpdlight', sans-serif;
+    color: #dc0032 !important;
+}
+
+#dpd-header nav.topheader {
+    float: right;
+    font-size: 14px;
+    line-height: 14px;
+    text-align: right;
+}
+
+#dpd-header nav.topheader > ul {
+    list-style-type:none;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+#dpd-header nav.topheader > ul > li {
+    list-style:none;
+    float: left;
+    padding: 14px 10px;
+    position: relative;
+    line-height: 14px;
+}
+
+#dpd-header nav.topheader > ul > li > a.active{
+    color: #dc0032;
+}
+
+#dpd-header nav.topheader > ul > li > a:hover{
+    color: #dc0032;
+}
+
+#dpd-header nav.topheader > ul > li a{
+    font-family: 'pluto_sans_dpdregular',sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 11px;
+    line-height: 11px;
+    -webkit-transition: color 0.2s;
+    -moz-transition: color 0.2s;
+    -o-transition: color 0.2s;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+#dpd-header nav.header {
+    clear: both;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+    background-color: #e6e7e7;
+}
+
+#dpd-header nav.header > ul {
+    list-style-type:none;
+    display: block;
+    width: 930px;
+    height: 30px;
+    margin: 0 auto;
+    background-color: #e6e7e7;
+}
+
+#dpd-header nav.header > ul > li{
+    list-style:none;
+    float: left;
+    position: relative;
+    line-height: 30px;
+}
+
+#dpd-header nav.header > ul > li > a.active {
+    background-color: #dc0032;
+    color: #fff;
+    line-height: 30px;
+}
+
+#dpd-header nav.header > ul > li > a:hover {
+    color: #fff;
+    background-color: #dc0032;
+}
+
+#dpd-header nav.header > ul > li > a {
+    cursor: pointer;
+    display: block;
+    padding: 1px 15px 0 15px;
+    font-family: 'pluto_sans_dpdlight',sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 12px;
+    transition: color 0.1s ease-in-out,background-color 0.1s ease-in-out;
+}
+
+/* ================= */
+/* ==== Content ==== */
+/* ================= */
+
+#dpd-content div.centered {
+    width: 900px;
+    margin: 0 auto;
+}
+
+#dpd-content div.dpdOpenBox {
+    height: 200px;
+    width: 280px;
+    margin-top: 32px;
+    float: left;
+    background-position: 0 0;
+    text-indent: -9999em;
+}
+
+
+#dpd-content .dpd-select{
+    position: relative;
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    float: left;
+    overflow: hidden;
+    background-color: #e6e7e7;
+}
+
+#dpd-content .dpd-select select{
+    width: 70px;
+    text-indent: 1px;
+    text-overflow: '';
+    appearance:none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+}
+
+#dpd-content .dpd-select .arrow-down{
+    cursor: pointer;
+    background-color: #414042;
+    float: right;
+    width: 40px;
+    height: 40px;
+    display: block;
+}
+
+#dpd-content .dpd-select .arrow-down:before{
+    content:"";
+    width: 1px;
+    display: block;
+    position: relative;
+    border: 12px solid white;
+    margin: 0 auto;
+    border-color: white transparent transparent transparent;
+    top: 15px;
+}
+
+#dpd-content .dpd-select select,
+#dpd-content input[type='text'],
+#dpd-content input[type='password'] {
+    height: 40px;
+    background-color: #e6e7e7;
+    margin: 0 0 10px 0;
+    border: none;
+    color: #414042;
+    outline: none;
+    padding: 10px;
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: 'pluto_sans_dpdlight',sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 13px;
+    line-height: 20px;
+    float: left;
+}
+
+#dpd-starting {
+    width: 100%;
+}
+
+#dpd-starting ol {
+    color: #ccc;
+    list-style-type: none;
+    width: 100%;
+}
+
+#dpd-starting ol li {
+    font: bold italic 45px/1.5 'pluto_sans_dpdlight',sans-serif;
+    margin-bottom: 20px;
+}
+
+#dpd-starting li p {
+    display: inline-block;
+    font: 12px/1.5 'pluto_sans_dpdlight',sans-serif;
+    padding-left: 60px;
+    color: #555;
+}
+
+#dpd-starting span.number {
+    float: left;
+    position: relative;
+}
+
+#dpd-starting .onoffswitch {
+    margin-top: 10px;
+    float: right;
+}
+
+#dpd-config div.centered,
+#dpd-starting div.centered {
+    width: 300px;
+    margin: 0 auto;
+}
+
+#dpd-starting .onoffswitch-inner:before {
+    content: "DONE";
+}
+
+#dpd-starting .onoffswitch-inner:after {
+    content: "TODO";
+}
+
+#dpd-starting #dpd-account-step-three .onoffswitch {
+    float: none;
+    margin: 0 auto;
+}
+
+#dpd-config .onoffswitch-inner:before,
+#dpd-starting #dpd-account-step-three .onoffswitch-inner:before {
+    content: "LIVE";
+}
+
+#dpd-config .onoffswitch-inner:after,
+#dpd-starting #dpd-account-step-three .onoffswitch-inner:after {
+    content: "TEST";
+}
+
+
+
+#dpd-starting .dpd-notificiation {
+    border: 1px solid;
+    margin: 10px 0px;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+
+#dpd-starting .dpd-notificiation ul{
+    margin: 0;
+    padding: 0;
+    padding-left: 10px;
+}
+
+#dpd-starting #dpd-info {
+    color: #00529B;
+    background-color: #BDE5F8;
+    background-image: url('../img/info.png');
+}
+
+#dpd-starting #dpd-success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+    background-image:url('../img/success.png');
+}
+
+#dpd-starting #dpd-warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+    background-image: url('../img/warning.png');
+}
+
+#dpd-starting #dpd-error {
+    color: #D8000C;
+    background-color: #FFBABA;
+    background-image: url('../img/error.png');
+}
+
+#dpd-starting #dpd-validation {
+color: #D63301;
+background-color: #FFCCBA;
+background-image: url('../img/validation.png');
+}
+
+/****/
+
+
+#dpd-status {
+    text-align: center;
+}
+
+#dpd-status h1{
+    text-align: left;
+}
+
+#dpd-stats-container {
+
+}
+
+#dpd-status .dpd-status-sub-total-container {
+    display: inline-block;
+    position:relative;
+    border-bottom: solid 3px #808285;
+    padding: 0;
+}
+
+#dpd-status .dpd-status-sub-total-container:after {
+    content:'';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 0;
+    height: 0;
+    border: solid 15px #808285;
+    border-color: #808285 transparent transparent transparent;
+}
+
+.dpd-sub-total {
+    float: left;
+    width: 200px;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+#dpd-status .dpd-sub-total h1 {
+    margin: 0;
+    padding: 0;
+}
+
+#dpd-status .dpd-pickup-logo {
+    background: url('../img/pickup.png') no-repeat;
+    background-size: contain;
+}
+
+#dpd-status .dpd-pickup-logo:after {
+    border: solid 15px #dc0032;
+    border-color: #dc0032 transparent transparent transparent;
+}
+
+#dpd-status .dpd-home-logo {
+    background: url('../img/classic.png') no-repeat;
+    background-size: contain;
+}
+
+#dpd-status .dpd-home-logo:after {
+    border: solid 15px #ffffff;
+    border-color: #ffffff transparent transparent transparent;
+}
+
+#dpd-status .dpd-predict-logo {
+    background: url('../img/predict.png') no-repeat;
+    background-size: contain;
+}
+
+#dpd-status .dpd-predict-logo:after {
+    border: solid 15px #e6e7e7;
+    border-color: #e6e7e7 transparent transparent transparent;
+}
+
+#dpd-status .dpd-sub-total-logo {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+#dpd-status .dpd-sub-total-logo:after {
+    content:'';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 0;
+    height: 0;
+}
+
+#dpd-status .dpd-total-count {
+    float: left;
+    width: 50%;
+    line-height: 40px;
+    padding-top: 15px;
+    font-size: 18;
+    text-align: center;
+}
+/* =========================== */
+
+#dpd-buttons nav.buttons {
+    width: 230px;
+    margin: 0 auto;
+}
+    
+#dpd-buttons nav.buttons > ul {
+    list-style-type:none;
+    display: block;
+    height: 30px;
+    padding: 0;
+}
+
+#dpd-buttons nav.buttons > ul > li {
+    
+    list-style:none;
+    float: left;
+    position: relative;
+    line-height: 30px;
+}
+
+#dpd-buttons #dpd-save { 
+    text-align: center;
+    background-color: #e6e7e7;
+    display: block;
+    width: 200px;
+    height: 30px;
+    position: relative;
+    margin: 0 5px;
+    font-family: 'pluto_sans_dpdlight',sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 12px;
+}
+
+#dpd-buttons nav a.inactive {
+    cursor: not-allowed;
+}
+
+#dpd-buttons nav a.active {
+    cursor: pointer;
+    background-color: #dc0032 !important;
+    color: #fff;
+}
