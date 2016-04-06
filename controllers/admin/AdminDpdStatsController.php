@@ -56,13 +56,52 @@ class AdminDpdStatsController extends ModuleAdminController
     
     public function displayAjax()
     {
-        $result = array(
-            "home" => array("checkout" => rand(), "labels" => rand())
-            ,"predict" => array("checkout" => rand(), "labels" => rand())
-            ,"pickup" => array("checkout" => rand(), "labels" => rand())
-        );
+        $parcelshop_carrier_id = Configuration::get($this->module->generateVariableName('pickup id'));
+        $classic_carrier_id = Configuration::get($this->module->generateVariableName('home id'));
+        $home_carrier_id = Configuration::get($this->module->generateVariableName('home with predict id'));
+        
+        $parcelshop_carrier = new Carrier($parcelshop_carrier_id);
+        $classic_carrier = new Carrier($classic_carrier_id);
+        $home_carrier = new Carrier($home_carrier_id);
+        
+        $references = array();
+        $references[] = $parcelshop_carrier->id_reference;
+        $references[] = $classic_carrier->id_reference;
+        $references[] = $home_carrier->id_reference;
+        
+        $query = 'SELECT 
+                `psc`.`id_reference`
+                ,(SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'dpdcarrier_label` WHERE `id_order` = `psoc`.`id_order`) as `label_count`
+                ,COUNT(*) as `order_count`
+                ,MIN(`psoc`.`date_add`) as `first_order`
+                ,MAX(`psoc`.`date_add`) as `last_order`
+            FROM 
+                `' . _DB_PREFIX_ . 'order_carrier` as `psoc` 
+            LEFT JOIN 
+                `' . _DB_PREFIX_ . 'carrier` as `psc`   
+            ON 
+                `psoc`.`id_carrier` = `psc`.`id_carrier`
+            WHERE 
+                `psc`.`id_reference` IN (' . implode($references, ', ') . ')
+            GROUP BY 
+                `psc`.`id_reference`';
+                
+        $query_result = Db::getInstance()->executeS($query);
+        
+        $result = array();
+        
+        if (count($query_result) > 0) {
+            foreach ($query_result as $row => $data) {
+                $carrier = Carrier::getCarrierByReference($data['id_reference']);
+                if ($carrier) {
+                    $result[$carrier->name]['checkout'] = $data['order_count'];
+                    $result[$carrier->name]['labels'] = $data['label_count'];
+                }
+            }
+        }
         
         echo Tools::jsonEncode($result);
         die;
     }
+    
 }

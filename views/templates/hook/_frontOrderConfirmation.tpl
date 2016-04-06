@@ -46,10 +46,15 @@
 *                        NN
 *}
 <script>
-    var dpdAdminConfigValues = {
-        configControllerUrl: "{$configControllerUrl}",
-        statsControllerUrl: "{$statsControllerUrl}",
-        scrollContainer: document.documentElement,
-        scrollOffset: -150
-    }
+    {literal}
+    $(document).ready(function(){
+        $('<div class="box dpd_selected_parcelshop"> \
+              <p>You have chosen to pickup your parcel in a DPD Pickup point:</p> \
+              <h1>{/literal}{$shop_info['name']}{literal}</h1> \
+              <p>{/literal}{$shop_info['address']}<br>{$shop_info['postcode']} {$shop_info['city']}{literal}</p> \
+          </div>').insertAfter('#center_column .box');
+    });
+        
+    {/literal}
 </script>
+

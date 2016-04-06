@@ -46,6 +46,7 @@
  *                     Ndhyyhd N
  *                        NN
  */
+
 class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontController
 {
     private $output = array(
@@ -59,15 +60,8 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
     public function init()
     {
         parent::init();
-        
-        $this->module->loadDis();
-        
-        $delisId = Configuration::get('DPD_DIS_delisid');
-        $delisPw = Configuration::get('DPD_DIS_password');
 
-        $url = Configuration::get('DPD_DIS_live_server') == 1 ? 'https://public-dis.dpd.nl/Services/' : 'https://public-dis-stage.dpd.nl/Services/';
-        
-        $this->disLogin = new DisLogin($delisId, $delisPw, $url);
+        $this->disLogin = $this->module->getLogin();
     }
     
     public function displayAjax()
@@ -92,8 +86,9 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         die;
     }
     
-    private function findShops() {
-        $searchData;
+    private function findShops()
+    {
+        $searchData = array();
         
         if (Tools::getIsset('lng') && Tools::getIsset('lat')) {
             $searchData = array(
@@ -125,16 +120,19 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         $shopFinder = new DisParcelShopFinder($this->disLogin);
         $result = $shopFinder->search($searchData);
         
-        if($result) {
-            $this->output['success']['dpd-locator'] = count($result->shops) . ' shops found';
+        if ($result) {
+            $this->output['success']['dpd-locator'] = count($result->shops) . ' ' . $this->module->l('shops found');
             $this->output['data']['center'] = $result->center;
-            foreach($result->shops as $shopID => $shop) {
+            foreach ($result->shops as $shopID => $shop) {
                 $this->output['data']['shops'][] = array(
                     'id' => $shopID
                     ,'lng' => $shop->longitude
                     ,'lat' => $shop->latitude
                     ,'name' => $shop->company
-                    ,'address' => $shop->street . ' ' . $shop->houseNo . ', ' . $shop->zipCode . ' ' . $shop->city
+                    ,'address' => $shop->street . ' ' .
+                        $shop->houseNo . ', ' .
+                        $shop->zipCode . ' ' .
+                        $shop->city
                     ,'logo' => array(
                         'url' => '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop.png'
                         ,'size' => array(
@@ -146,7 +144,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                             ,'height' => 60
                         )
                         ,'anchor' => array(
-                            'x' => 17, 
+                            'x' => 17,
                             'y' => 34
                         )
                         ,'origin' => array(
@@ -156,34 +154,45 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                     )
                 );
             }
-            $this->output['data']['info-link'] = 'Show more information';
-            $this->output['data']['select-link'] = 'Select this parcelshop';
+            $this->output['data']['info-link'] = $this->module->l('Show more information');
+            $this->output['data']['select-link'] = $this->module->l('Select this parcelshop');
             
             $cookie = new Cookie('dpdshops');
             $cookie->last_search = serialize($searchData);
             $cookie->write();
         } else {
-            $this->output['warning']['dpd-locator'] = 'No shops found';
+            $this->output['warning']['dpd-locator'] = $this->module->l('No shops found');
         }
     }
     
-    private function getShopInfo() {
+    private function getShopInfo()
+    {
         $shop = $this->getProposedShop();
         
         if ($shop) {
             $this->output['data'] = '<div><table>';
             
-            foreach($shop->openingHours as $day) {
-                $this->output['data'] .= '<tr><td>'.$day->weekday.'</td><td>'.$day->openMorning.'</td><td>'.$day->closeMorning.'</td><td>'.$day->openAfternoon.'</td><td>'.$day->closeAfternoon.'</td></tr>';
+            foreach ($shop->openingHours as $day) {
+                $this->output['data'] .=
+                    '<tr><td>' . $day->weekday .
+                    '</td><td>' . $day->openMorning .
+                    '</td><td>' . $day->closeMorning .
+                    '</td><td>' . $day->openAfternoon .
+                    '</td><td>' . $day->closeAfternoon .
+                    '</td></tr>';
             }
             
             $this->output['data'] .= '</table></div>';
         } else {
-            $this->output['error']['unknown-shopid'] = 'The shopID provided wasn\'t proposed or is disabled since your lookup';
+            $this->output['error']['unknown-shopid'] = $this->module->l(
+                "The shopID provided wasn't proposed " .
+                "or is disabled since your lookup"
+            );
         }
     }
     
-    private function saveShop() {
+    private function saveShop()
+    {
         $shop = $this->getProposedShop();
         
         if ($shop) {
@@ -191,22 +200,48 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             $id_carrier = $this->context->cart->id_carrier;
             $id_location = $shop->parcelShopId;
             
-            Db::getInstance()->insert('dpdcarrier_pickup', array('id_cart' => $id_cart, 'id_carrier' => $id_carrier, 'id_location' => $id_location), false, true, Db::ON_DUPLICATE_KEY);
+            $dbInstance = Db::getInstance();
             
-            $this->output['data'] = '<p>You have chosen: <strong>' . $shop->company . '</strong>';
-            $this->output['data'] .= '<br>Located at: ' . $shop->street . ' ' . $shop->houseNo . ', ' . $shop->zipCode  . ' ' . $shop->city . '</p>';
-            $this->output['data'] .= '<a href="#" onclick="javascript:dpdLocator.showLocator();return false;">Click here to alter your choice</a>';
+            $dbInstance->insert(
+                'dpdcarrier_pickup'
+                , array(
+                    'id_cart' => $dbInstance->escape($id_cart)
+                    ,'id_carrier' => $dbInstance->escape($id_carrier)
+                    ,'id_location' => $dbInstance->escape($id_location)
+                    ,'lat' => $dbInstance->escape($shop->latitude)
+                    ,'lng' => $dbInstance->escape($shop->longitude)
+                    ,'name' => $dbInstance->escape($shop->company)
+                    ,'address' => $dbInstance->escape($shop->street . ' ' .$shop->houseNo)
+                    ,'city' => $dbInstance->escape($shop->city)
+                    ,'postcode' => $dbInstance->escape($shop->zipCode)
+                    ,'iso_code' => $dbInstance->escape($shop->isoAlpha2)
+                )
+                , false
+                , true
+                , Db::ON_DUPLICATE_KEY
+            );
+            
+            $this->output['data'] = '<p>' . $this->module->l('You have chosen') .
+                ': <strong>' . $shop->company . '</strong>' .
+                '<br>' . $this->module->l('Located at') . ': ' . $shop->street . ' ' . $shop->houseNo .
+                ', ' . $shop->zipCode  . ' ' . $shop->city . '</p>' .
+                '<a href="#" onclick="javascript:dpdLocator.showLocator();return false;">' .
+                $this->module->l('Click here to alter your choice') . '</a>';
         } else {
-            $this->output['error']['unknown-shopid'] = 'The shopID provided wasn\'t proposed or is disabled since your lookup';
+            $this->output['error']['unknown-shopid'] = $this->module->l(
+                "The shopID provided wasn't proposed " .
+                "or is disabled since your lookup"
+            );
         }
         
         //TODO - delete cookie.
         
     }
     
-    private function getProposedShop(){
+    private function getProposedShop()
+    {
         if (!Tools::getIsset('dpdshopid') || Tools::getValue('dpdshopid') =='') {
-            $this->output['validation']['dpdshopid'] = 'No parcelshop selection found.';
+            $this->output['validation']['dpdshopid'] = $this->module->l('No parcelshop selection found.');
         }
         
         if (count($this->output['validation']) == 0) {
@@ -216,8 +251,18 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             $shopFinder = new DisParcelShopFinder($this->disLogin);
             $result = $shopFinder->search($searchData);
             
-            if(!$result || !isset($result->shops[Tools::getValue('dpdshopid')])) {
-                Logger::addLog('Customer, ' . $this->context->customer->firstname . ' ' . $this->context->customer->lastname . ' (' . $this->context->customer->id . '), tried to use a shop ID that wasn\'t proposed to him (' . Tools::getValue('dpdshopid') . ')', 2, null, null, null, true);
+            if (!$result || !isset($result->shops[Tools::getValue('dpdshopid')])) {
+                Logger::addLog(
+                    'Customer, ' . $this->context->customer->firstname . ' ' .
+                    $this->context->customer->lastname . ' (' .
+                    $this->context->customer->id . '), tried to use a shop ID that wasn\'t proposed to him (' .
+                    Tools::getValue('dpdshopid') . ')'
+                    , 2
+                    , null
+                    , null
+                    , null
+                    , true
+                );
                 return false;
             }
             

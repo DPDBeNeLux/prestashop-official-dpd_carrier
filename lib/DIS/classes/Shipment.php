@@ -60,7 +60,9 @@ class DisShipment
     }
     
     $counter = 0;
-    while($counter < 2)
+    $stop = false;
+    while($counter < 2 
+      && !$stop)
     {
       try {
         $client = new SoapClient($this->login->getWebserviceUrl(self::WEBSERVICE_SHIPMENT), array('trace' => 1));
@@ -68,11 +70,14 @@ class DisShipment
         $soapHeader = $this->login->getSoapHeader();
         $client->__setSoapHeaders($soapHeader);
         $result = $client->storeOrders($this->request);
+        $stop = true;
       } 
       catch (SoapFault $soapE) 
       {
+        
         if(isset($soapE->detail->authenticationFault->errorCode)
-          && $soapE->detail->authenticationFault->errorCode == 's:LOGIN_7')
+          && ($soapE->detail->authenticationFault->errorCode == 's:LOGIN_7'
+          || $soapE->detail->authenticationFault->errorCode == 'LOGIN_7'))
         {
           // If there was a login error we'll try one more time (counter) after a login refresh
           DisLogger::log("Label generation failed due to authentication error", DisLogger::DEBUG);

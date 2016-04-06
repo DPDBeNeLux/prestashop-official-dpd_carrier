@@ -117,7 +117,9 @@ class DisParcelShopFinder
       }
       
       $counter = 0;
-      while($counter < 2)
+      $stop = false;
+      while($counter < 2 
+        && !$stop)
       {
         try {
           $client = new SoapClient($this->login->getWebserviceUrl(self::WEBSERVICE_PARCELSHOP));
@@ -126,6 +128,7 @@ class DisParcelShopFinder
           $client->__setSoapHeaders($soapHeader);
           
           $result = $client->findParcelShopsByGeoData($request);
+          $stop = true;
         } 
         catch (SoapFault $soapE) 
         {

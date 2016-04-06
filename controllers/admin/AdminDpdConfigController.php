@@ -77,14 +77,19 @@ class AdminDpdConfigController extends ModuleAdminController
                     $this->saveUserCredentials();
                     break;
                 case 2:
+                    // TODO: Create testSenderAddress !!!
                     $this->testCache();
                     $this->testLogin();
                     $this->saveUserCredentials();
+                    $this->updateTTlink();
                     break;
                 default:
                     Tools::Redirect(__PS_BASE_URI__);
                     break;
             }
+        } else {
+            Tools::Redirect(__PS_BASE_URI__);
+            die;
         }
         echo Tools::jsonEncode($this->output);
         die;
@@ -93,74 +98,106 @@ class AdminDpdConfigController extends ModuleAdminController
     private function testLogin()
     {
         if (!Tools::getIsset('delisid') || Tools::getValue('delisid') =='') {
-            $this->output["validation"]["delisid"] = "Please enter your delisID.";
+            $this->output["validation"]["delisid"] = $this->module->l("Please enter your delisID.");
         }
         if (!Tools::getIsset('password') || Tools::getValue('password') =='') {
-            $this->output["validation"]["password"] = "Please enter your password.";
+            $this->output["validation"]["password"] = $this->module->l("Please enter your password.");
         }
-
+        
         if (count($this->output["validation"]) == 0) {
-            $url = (bool)Tools::getValue('password') ? 'https://public-dis.dpd.nl/Services/' : 'https://public-dis-stage.dpd.nl/Services/';
+            $url = (bool)Tools::getIsset('dpd-live-account') ?
+              'https://public-dis.dpd.nl/Services/' :
+              'https://public-dis-stage.dpd.nl/Services/';
             
             $dpdLogin = new DisLogin(Tools::getValue('delisid'), Tools::getValue('password'), $url);
-            // The constructor will use a cached value if available, so to test the credentials we need to trigger a refresh/
+            // The constructor will use a cached value if available,
+            // so to test the credentials we need to trigger a refresh
             if (!$dpdLogin->refreshed) {
                 $dpdLogin->refresh();
             }
             if ($dpdLogin->getToken() == "") {
-                $this->output["warning"]["dis-login"] = "Seems like your user name and password don't work. Perhaps you can try it on the other server?";
+                $this->output["warning"]["dis-login"] = $this->module->l(
+                    "Seems like your user name and password don't work. " .
+                    "Perhaps you can try it on the other server?"
+                );
             } else {
-                $this->output["success"]["dis-login"] = "The login test worked, so you should be ready to go.";
+                $this->output["success"]["dis-login"] = $this->module->l(
+                    "The login test worked, so you should be ready to go."
+                );
                 if (!Tools::getIsset('dpd-live-account')) {
-                    $this->output["info"]["stage-account"] = "Please note that you selected to connect to the Stage/Test server. Do not use this to send out real parcels, only use it to check your setup.";
+                    $this->output["info"]["stage-account"] = $this->module->l(
+                        "Please note that you selected to connect to the Stage/Test server. " .
+                        "Do not use this to send out real parcels, only use it to check your setup."
+                    );
                 }
             }
         }
 
     }
     
-    private function testCache(){
+    private function testCache()
+    {
         // _PS_CACHING_SYSTEM_ keeps set after disabling in the back end.
         $cache = Cache::getInstance();
         $cache->set("DPDTest", "Hello World!", 60);
         $return = $cache->get("DPDTest");
-        if(!$return || $return != "Hello World!") {
-            $this->output["warning"]["prestashop-cache"] = "It looks like no cache is enabled on your system. Please note that you'll need cache enabled when you start using the live services.";
+        if (!$return || $return != "Hello World!") {
+            $this->output["warning"]["prestashop-cache"] = $this->module->l(
+                "It looks like no cache is enabled on your system. " .
+                "Please note that you'll need cache enabled when you start using the live services."
+            );
         }
     }
     
     private function saveUserCredentials()
     {
         if (!Tools::getIsset('delisid') || Tools::getValue('delisid') =='') {
-            $this->output["validation"]["delisid"] = "Please enter your delisID.";
+            $this->output["validation"]["delisid"] = $this->module->l("Please enter your delisID.");
         }
         if (!Tools::getIsset('password') || Tools::getValue('password') =='') {
-            $this->output["validation"]["password"] = "Please enter your password.";
+            $this->output["validation"]["password"] = $this->module->l("Please enter your password.");
         }
         
         if (count($this->output["validation"]) == 0) {
-            Configuration::updateValue('DPD_DIS_delisid', Tools::getValue('delisid'));
-            Configuration::updateValue('DPD_DIS_password', Tools::getValue('password'));
-            if (!Tools::getIsset('dpd-live-account')) {
-                Configuration::updateValue('DPD_DIS_live_server', true);
-            }
-            $this->output["success"]["dis-login-save"] = "User credentials saved.";
+            $id_shop_group = (int)$this->context->shop->getContextShopGroupID();
+            $id_shop = (int)$this->context->shop->getContextShopID();
+            
+            Configuration::updateValue('DPD_DIS_delisid', Tools::getValue('delisid'), $id_shop_group, $id_shop);
+            Configuration::updateValue('DPD_DIS_password', Tools::getValue('password'), $id_shop_group, $id_shop);
+            Configuration::updateValue('DPD_DIS_live_server', Tools::getIsset('dpd-live-account'), $id_shop_group, $id_shop);
+            
+            $this->output["success"]["dis-login-save"] = $this->module->l("User credentials saved.");
         } else {
-            $this->output["error"]["dis-login-save"] = "User credentials couldn't be saved.";
+            $this->output["error"]["dis-login-save"] = $this->module->l("User credentials couldn't be saved.");
+        }
+    }
+    
+    private function updateTTlink()
+    {
+        $this->module->loadDis();
+        
+        $shipping_services = new DisServices();
+        foreach ($shipping_services->services as $service)
+        {
+            $carrier = new Carrier(Configuration::get($this->module->generateVariableName($service->name . ' id')));
+            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' . $this->context->country->iso_code .
+                '&delisId=' . Tools::getValue('delisid') . 
+                '&matchCode=@';
+            $carrier->save();
         }
     }
     
     private function mailDisAccountRequest()
     {
         if (!Tools::getIsset('delisid') || Tools::getValue('delisid') =='') {
-            $this->output["validation"]["delisid"] = "Please enter your delisID.";
+            $this->output["validation"]["delisid"] = $this->module->l("Please enter your delisID.");
         }
         if (!Tools::getIsset('password') || Tools::getValue('password') =='') {
-            $this->output["validation"]["password"] = "Please enter your password.";
+            $this->output["validation"]["password"] = $this->module->l("Please enter your password.");
         }
         
         if (count($this->output["validation"]) == 0) {
-            $id_lang = Language::getIdByIso("GB");//Tools::getValue('country'));
+            $id_lang = Language::getIdByIso("EN");//Tools::getValue('country'));
             $subject = '[' . Tools::getValue('country') . '] New DIS account request: ' . Tools::getValue('delisid');
             
             $template_vars = array(
@@ -172,7 +209,7 @@ class AdminDpdConfigController extends ModuleAdminController
                 'DIS_account_request',
                 $subject,
                 $template_vars,
-                'michiel.vangucht@dpd.be',
+                'prestashop@dpd.be',
                 null,
                 null,
                 null,
@@ -182,51 +219,61 @@ class AdminDpdConfigController extends ModuleAdminController
                 false,
                 $this->context->shop->id
             )) {
-                $this->output["success"]["dis-account-request"] = "Your account request has been send";
+                $this->output["success"]["dis-account-request"] = $this->module->l(
+                    "Your account request has been send"
+                );
             } else {
-                $this->output["error"]["dis-account-request"] = "Your account request couldn't be send. Please check your log for more information";
+                $this->output["error"]["dis-account-request"] = $this->module->l(
+                    "Your account request couldn't be send. " .
+                    "Please check your log for more information"
+                );
             }
             
         } else {
-            $this->output["error"]["dis-account-request"] = "Your account request couldn't be generated";
+            $this->output["error"]["dis-account-request"] = $this->module->l(
+                "Your account request couldn't be generated"
+            );
         }
     }
     
     private function mailAccountRequest()
     {
         if (!Tools::getIsset('company') || Tools::getValue('company') == '') {
-            $this->output["validation"]["company"] = "Please enter your company name.";
+            $this->output["validation"]["company"] = $this->module->l("Please enter your company name.");
         }
         if (!Tools::getIsset('ppm') || Tools::getValue('ppm') =='') {
-            $this->output["validation"]["ppm"] = "Please enter the amount of parcels you are (planning on) shipping a month.";
+            $this->output["validation"]["ppm"] = $this->module->l(
+                "Please enter the amount of parcels you are " .
+                "(planning on) shipping a month."
+            );
         }
         if (!Tools::getIsset('contact') || Tools::getValue('contact') =='') {
-            $this->output["validation"]["contact"] = "Please enter your name.";
+            $this->output["validation"]["contact"] = $this->module->l("Please enter your name.");
         }
         if (!Tools::getIsset('email') || Tools::getValue('email') =='') {
-            $this->output["validation"]["email"] = "Please enter your email.";
+            $this->output["validation"]["email"] = $this->module->l("Please enter your email.");
         }
         if (!Tools::getIsset('phone') || Tools::getValue('phone') =='') {
-            $this->output["validation"]["phone"] = "Please enter your phone number.";
+            $this->output["validation"]["phone"] = $this->module->l("Please enter your phone number.");
         }
         if (!Tools::getIsset('street') || Tools::getValue('street') =='') {
-            $this->output["validation"]["street"] = "Please enter your street.";
+            $this->output["validation"]["street"] = $this->module->l("Please enter your street.");
         }
         if (!Tools::getIsset('houseno') || Tools::getValue('houseno') =='') {
-            $this->output["validation"]["houseno"] = "Please enter your house number.";
+            $this->output["validation"]["houseno"] = $this->module->l("Please enter your house number.");
         }
         if (!Tools::getIsset('country') || Tools::getValue('country') =='') {
-            $this->output["validation"]["country"] = "Please select your country.";
+            $this->output["validation"]["country"] = $this->module->l("Please select your country.");
         }
         if (!Tools::getIsset('postcode') || Tools::getValue('postcode') =='') {
-            $this->output["validation"]["postcode"] = "Please enter your postal code.";
+            $this->output["validation"]["postcode"] = $this->module->l("Please enter your postal code.");
         }
         if (!Tools::getIsset('city') || Tools::getValue('city') =='') {
-            $this->output["validation"]["city"] = "Please enter your city.";
+            $this->output["validation"]["city"] = $this->module->l("Please enter your city.");
         }
         
         if (count($this->output["validation"]) == 0) {
-            $id_lang = Language::getIdByIso("GB");//Tools::getValue('country'));
+            $id_lang = Language::getIdByIso("EN");//Tools::getValue('country'));
             $subject = '[' . Tools::getValue('country') . '] New account request: ' . Tools::getValue('company');
             
             $template_vars = array(
@@ -246,7 +293,7 @@ class AdminDpdConfigController extends ModuleAdminController
                 'account_request',
                 $subject,
                 $template_vars,
-                'michiel.vangucht@dpd.be',
+                'prestashop@dpd.be',
                 null,
                 null,
                 null,
@@ -256,12 +303,19 @@ class AdminDpdConfigController extends ModuleAdminController
                 false,
                 $this->context->shop->id
             )) {
-                $this->output["success"]["dpd-account-request"] = "Your account request has been send";
+                $this->output["success"]["dpd-account-request"] = $this->module->l(
+                    "Your account request has been send"
+                );
             } else {
-                $this->output["error"]["dpd-account-request"] = "Your account request couldn't be send. Please check your log for more information";
+                $this->output["error"]["dpd-account-request"] = $this->module->l(
+                    "Your account request couldn't be send. " .
+                    "Please check your log for more information"
+                );
             }
         } else {
-            $this->output["error"]["dpd-account-request"] = "Your account request couldn't be generated";
+            $this->output["error"]["dpd-account-request"] = $this->module->l(
+                "Your account request couldn't be generated"
+            );
         }
     }
 }

@@ -45,11 +45,21 @@
 *                     Ndhyyhd N
 *                        NN
 *}
-<script>
-    var dpdAdminConfigValues = {
-        configControllerUrl: "{$configControllerUrl}",
-        statsControllerUrl: "{$statsControllerUrl}",
-        scrollContainer: document.documentElement,
-        scrollOffset: -150
+<style>
+    .dpd.loading {
+        background: url('/img/loader.gif') no-repeat;
+        width: 24px;
+        height: 24px;
+        display: inline-block;
     }
-</script>
+    .badge#dpd_label_count {
+        display: none;
+    }
+</style>
+<li>
+    <a href="#labels">
+        <i class="icon-file-text"></i>
+        DPD <span class="dpd loading" id="dpd_label_count_loading"></span>
+        <span class="badge" id="dpd_label_count">0</span>
+    </a>
+</li>

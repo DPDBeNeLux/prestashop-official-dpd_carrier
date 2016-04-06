@@ -49,6 +49,8 @@
 
 class DpdCarrier extends CarrierModule
 {
+    public $download_location;
+    
     private $neededControllers = array(
         'AdminDpdStats' => 'DPD Stats'
         ,'AdminDpdConfig' => 'DPD Configuration'
@@ -57,10 +59,19 @@ class DpdCarrier extends CarrierModule
     private $hooks = array(
         'actionCarrierUpdate' // Triggered when carrier is edited in back-end
         ,'displayBeforeCarrier' // Used to display the map before the carrier selection
+        ,'actionCarrierProcess'
+        ,'displayPayment'
+        ,'displayBeforePayment'
+        ,'displayOrderConfirmation'
+        ,'displayAdminOrderTabOrder'
+        ,'displayAdminOrderContentOrder'
+        ,'actionOrderStatusUpdate'
     );
     
     public function __construct()
     {
+        $this->download_location = _PS_DOWNLOAD_DIR_ . 'dpd';
+        
         $this->loadDis();
         
         $this->version = '0.2.0';
@@ -68,15 +79,17 @@ class DpdCarrier extends CarrierModule
         $this->dependencies = array();
         $this->name = 'dpdcarrier';
         $this->displayName = $this->l('DPD Carrier 2.0');
-        $this->description = $this->l('Start shipping with DPD today. A parcel 2home, 2shop or between your own stores? No problem!');
+        $this->description = $this->l('Description Small');
         $this->author = 'Michiel Van Gucht';
         $this->author_uri = 'https://be.linkedin.com/in/mvgucht';
         $this->description_full = $this->l('Description Full');
         $this->additional_description = $this->l('Additional Description');
-        $this->need_instance = 1; // This loads the module every time the back-end is loaded so we can check some stuff.
+        // This loads the module every time the back-end is loaded so we can check some stuff.
+        $this->need_instance = 1;
         $this->tab = 'shipping_logistics';
-        // $this->warning; // Fill this variable with warnings for the shipper (that is why we need need_instance)
+        $this->warning; // Fill this variable with warnings for the shipper (that is why we need need_instance)
         $this->limited_countries = array('be', 'lu', 'nl'); // Just to be a douche :)
+        // $this->controllers = array('DpdStats', 'DpdConfig');  // This doesn't work.
         
         $this->bootstrap = true; // can't remember why. TODO: check this.
         
@@ -104,40 +117,48 @@ class DpdCarrier extends CarrierModule
           
         if (!parent::install()
           || !$this->initCarriers()
+          || !$this->installTab()
           || !$this->installDB()) {
             return false;
         }
         
-        foreach($this->hooks as $hook_name) {
-            if(!$this->registerHook($hook_name)) {
+        foreach ($this->hooks as $hook_name) {
+            if (!$this->registerHook($hook_name)) {
                 return false;
             }
         }
         
         if (count($this->installControllers($this->neededControllers)) > 0) {
-            // ADD ERROR STUFF HERE
+            //ADD ERROR STUFF HERE
             return false;
         }
+        
+        // TODO: CREATE DOWNLOAD LOCATION.
+        
         return true;
     }
     
     public function uninstall()
     {
-        if (!parent::uninstall()
-          || $this->removeCarriers()) {
-            return false;
+        
+        if (!parent::uninstall()){
+            $this->warning[] = "Could not run parent uninstaller successfully.";
         }
         
-        foreach($this->hooks as $hook_name) {
-            if(!$this->unregisterHook($hook_name)) {
-                return false;
+        if (!$this->removeCarriers()) {
+            $this->warning[] = "Could not remove carriers";
+        }
+
+        foreach ($this->hooks as $hook_name) {
+            if (!$this->unregisterHook($hook_name)) {
+                $this->warning[] = "Could not unhook hook " . $hook_name;
             }
         }
         
         if (count($this->uninstallControllers($this->neededControllers)) > 0) {
             // ADD ERROR STUFF HERE
-            return false;
         }
+        
         return true;
     }
     
@@ -167,16 +188,33 @@ class DpdCarrier extends CarrierModule
         return $failed;
     }
     
-    private function installDB() 
+    private function installTab()
     {
-      $file = dirname(__FILE__) .'/install/install.sql';
-      $handle = fopen($file, "r");
-      $query = fread($handle, filesize($file));
-      fclose($handle);
-      
-      $query = preg_replace('/_PREFIX_/', _DB_PREFIX_, $query);
-      
-      return Db::getInstance()->execute($query);
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->name = array();
+        $tab->class_name = 'AdminDpdLabels';
+
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'DPD Shipping List';
+        }
+
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminShipping');
+        $tab->module = $this->name;
+
+        return $tab->add();
+    }
+    
+    private function installDB()
+    {
+        $file = dirname(__FILE__) .'/install/install.sql';
+        $handle = fopen($file, "r");
+        $query = fread($handle, filesize($file));
+        fclose($handle);
+        
+        $query = preg_replace('/_PREFIX_/', _DB_PREFIX_, $query);
+        
+        return Db::getInstance()->execute($query);
     }
     
     private function uninstallControllers($list)
@@ -207,28 +245,38 @@ class DpdCarrier extends CarrierModule
         $default = $shipping_services->default;
         
         // Return false if no services defined.
-        if(!isset($shipping_services->services)) {
+        if (!isset($shipping_services->services)) {
             return false;
         }
         
-        foreach($shipping_services->services as $service) {
+        $country_iso =  $this->context->country->iso_code;
+        $language_iso = $this->context->language->iso_code;
+        
+        foreach ($shipping_services->services as $service) {
+            $max_width = (isset($service->max_width) ? $service->max_width : $default->max_width);
+            $max_height = (isset($service->max_height) ? $service->max_height : $default->max_height);
+            $max_depth = (isset($service->max_depth) ? $service->max_depth : $default->max_depth);
+            $max_weight = (isset($service->max_weight) ? $service->max_weight : $default->max_weight);
+        
             $carrier = new Carrier();
             $carrier->name = $service->name;
-            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' . $this->context->country->iso_code .'&query=@';
+            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $language_iso . '_' . 
+                $country_iso .'&query=@';
             $carrier->active = true;
             $carrier->shipping_handling = true;
             $carrier->range_behavior = 0;
             $carrier->shipping_external = false;
             $carrier->external_module_name = $this->name;
             $carrier->need_range = false;
-            $carrier->max_width = (isset($service->max_width) ? $service->max_width : $default->max_width) * $dimension_multiplier;
-            $carrier->max_height = (isset($service->max_width) ? $service->max_width : $default->max_width) * $dimension_multiplier;
-            $carrier->max_depth = (isset($service->max_width) ? $service->max_width : $default->max_width) * $dimension_multiplier;
-            $carrier->max_weight = (isset($service->max_weight) ? $service->max_weight : $default->max_weight) * $weight_multiplier;
+            $carrier->max_width = $max_width * $dimension_multiplier;
+            $carrier->max_height = $max_height * $dimension_multiplier;
+            $carrier->max_depth = $max_depth * $dimension_multiplier;
+            $carrier->max_weight = $max_weight * $weight_multiplier;
             $carrier->grade = 9;
 
-            foreach ($languages as $language) 
+            foreach ($languages as $language) {
                 $carrier->delay[$language['id_lang']] = $service->description; //TODO: ADD TRANSLATION
+            }
             
             // Save the new carrier
             if (!$carrier->add()) {
@@ -237,58 +285,59 @@ class DpdCarrier extends CarrierModule
                 $groups = Group::getGroups(true);
                 foreach ($groups as $group) {
                     Db::getInstance()->insert('carrier_group', array(
-                      'id_carrier' => (int) $carrier->id,
-                      'id_group' => (int) $group['id_group']
+                        'id_carrier' => (int) $carrier->id,
+                        'id_group' => (int) $group['id_group']
                     ), false, true, Db::ON_DUPLICATE_KEY);
                 }
                 
                 $weight_ranges = (isset($service->weight_ranges) ? $service->weight_ranges : $default->weight_ranges);
                 $ranges = array();
-
-                for($i = 0; $i < count($weight_ranges) - 1; $i++)
-                {
-                  $rangeWeight = new RangeWeight();
-                  $rangeWeight->id_carrier = $carrier->id;
-                  $rangeWeight->delimiter1 = $weight_ranges[$i] * $weight_multiplier;
-                  $rangeWeight->delimiter2 = $weight_ranges[$i + 1] * $weight_multiplier;
-                  $rangeWeight->add();
-                  
-                  $ranges[] = $rangeWeight;
+                
+                for ($i = 0; $i < count($weight_ranges) - 1; $i++) {
+                    $rangeWeight = new RangeWeight();
+                    $rangeWeight->id_carrier = $carrier->id;
+                    $rangeWeight->delimiter1 = $weight_ranges[$i] * $weight_multiplier;
+                    $rangeWeight->delimiter2 = $weight_ranges[$i + 1] * $weight_multiplier;
+                    $rangeWeight->add();
+                    
+                    $ranges[] = $rangeWeight;
                 }
                 
-                $zones = (isset($method->zones) ? $method->zones : $default->zones);
+                $zones = (isset($service->zones) ? $service->zones : $default->zones);
                 
-                foreach($zones as $zone_name)
-                {
+                foreach ($zones as $zone_name) {
                     $zone = new Zone(Zone::getIdByName($zone_name));
                     Db::getInstance()->insert(
                         'carrier_zone',
                         array(
                             'id_carrier' => (int)$carrier->id,
-                            'id_zone' => (int)$zone->id), 
-                        false, 
-                        true, 
+                            'id_zone' => (int)$zone->id),
+                        false,
+                        true,
                         Db::ON_DUPLICATE_KEY
                     );
 
-                    foreach($ranges as $range)
-                    {
+                    foreach ($ranges as $range) {
                         Db::getInstance()->insert(
-                            'delivery', 
-                            array(
-                                'id_carrier' => $carrier->id, 
-                                'id_range_price' => NULL, 
-                                'id_range_weight' => (int)$range->id, 
-                                'id_zone' => (int)$zone->id, 
-                                'price' => '0'),
-                            true, 
-                            true, 
-                            Db::ON_DUPLICATE_KEY
+                            'delivery'
+                            , array(
+                                'id_carrier' => $carrier->id
+                                ,'id_range_price' => null
+                                ,'id_range_weight' => (int)$range->id
+                                ,'id_zone' => (int)$zone->id
+                                ,'price' => '0'
+                            )
+                            , true
+                            , true
+                            , Db::ON_DUPLICATE_KEY
                         );
                     }
                 }
             }
-            copy(dirname(__FILE__) . '/lib/DIS/img/' . strtolower(str_replace(' ', '_', $service->name)) . '.jpg', _PS_SHIP_IMG_DIR_ . '/' . (int)$carrier->id . '.jpg');
+            copy(
+                dirname(__FILE__) . '/lib/DIS/img/' . Tools::strtolower(str_replace(' ', '_', $service->name)) . '.jpg'
+                , _PS_SHIP_IMG_DIR_ . '/' . (int)$carrier->id . '.jpg'
+            );
               
             Configuration::updateValue($this->generateVariableName($service->name . ' id'), (int)($carrier->id));
         }
@@ -299,17 +348,17 @@ class DpdCarrier extends CarrierModule
     {
         $this->loadDis();
         $shipping_services = new DisServices();
-
-        foreach($shipping_services->services as $service)
-        {
+        
+        foreach ($shipping_services->services as $service) {
             $carrier_var_name = $this->generateVariableName($service->name . ' id');
             $carrier = new Carrier(Configuration::get($carrier_var_name));
             
-            if (!$carrier->delete() || !Configuration::deleteByName($carrier_var_name))
-              return false;
+            if (!$carrier->delete() || !Configuration::deleteByName($carrier_var_name)) {
+                $this->warning[] = "Could not delete carrier " . $service->name;
+            }
         }
         
-        return true;
+        return count($this->warning) == 0;
     }
     /**
      *  The configuration screen content.
@@ -334,14 +383,33 @@ class DpdCarrier extends CarrierModule
         return $this->display(__FILE__, '_dpdAdminConfigValues.tpl') . $content;
     }
     
+    public function hookActionCarrierUpdate($params)
+    {
+        $dis_services = new DisServices();
+        
+        foreach ($dis_services->services as $service) {
+            $var_name = $this->generateVariableName($service->name . ' id');
+            
+            if ((int)($params['id_carrier']) == (int)(Configuration::get($var_name))) {
+                Configuration::updateValue($var_name, (int)($params['carrier']->id));
+            }
+        }
+    }
+    
     public function hookDisplayBeforeCarrier()
     {
         $this->context->controller->addCSS($this->_path.'lib/DIS/templates/css/locator.css');
         $this->context->controller->addJS($this->_path.'lib/DIS/js/dpdParcelshopLocator.js');
         
+        $controller_path = $this->context->link->getModuleLink(
+            'dpdcarrier'
+            , 'dpdshoplocator'
+            , array('ajax' => 'true')
+        );
+        
         $this->context->smarty->assign(
             array(
-                'controller_path' => $this->context->link->getModuleLink('dpdcarrier','dpdshoplocator', array('ajax' => 'true'))
+                'controller_path' => $controller_path
                 ,'carrier_id' => Configuration::get('DPDCARRIER_PICKUP_ID')
             )
         );
@@ -349,17 +417,97 @@ class DpdCarrier extends CarrierModule
         return $this->display(__FILE__, '_dpdLocator.tpl');
     }
     
-    public function hookActionCarrierUpdate($params)
+    public function hookActionCarrierProcess($params)
     {
-      $dis_services = new DisServices();
-      
-      foreach ($dis_services->services as $service)
-      {
-        $var_name = $this->generateVariableName($service->name . ' id');
+        if ((int)($params['cart']->id_carrier) == (int)(Configuration::get('DPDCARRIER_PICKUP_ID'))) {
+            if (!$this->getParcelShopInfo($params['cart'])) {
+                $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop before proceeding.');
+            }
+        }
+    }
+    
+    public function hookDisplayOrderConfirmation($params)
+    {
+        $cart = new Cart($params['objOrder']->id_cart);
+        $this->context->smarty->assign(
+            array(
+                'shop_info' => $this->getParcelShopInfo($cart)
+            )
+        );
         
-        if ((int)($params['id_carrier']) == (int)(Configuration::get($var_name)))
-          Configuration::updateValue($var_name, (int)($params['carrier']->id));
-      }
+        return $this->display(dirname(__FILE__), '_frontOrderConfirmation.tpl');
+    }
+    
+    public function hookDisplayAdminOrderTabOrder($params)
+    {
+        if ($this->isDpdOrder($params['order'])) {
+            return $this->display(__FILE__, '_adminOrderTab.tpl');
+        }
+    }
+    
+    public function hookDisplayAdminOrderContentOrder($params)
+    {
+        if ($this->isDpdOrder($params['order'])) {
+            $order_carrier = new OrderCarrier($params['order']->getIdOrderCarrier());
+            $cart = new Cart($params['order']->id_cart);
+            $this->context->smarty->assign(
+                array(
+                    'controllerUrl' => $this->context->link->getAdminLink('AdminDpdLabels') . "&ajax=true"
+                    ,'order_weight' => $order_carrier->weight
+                    ,'order' => $params['order']
+                    ,'shop_info' => $this->getParcelShopInfo($cart)
+                    ,'init_settings' => $this->getInitialOrderSettings($params['order'])
+                )
+            );
+            
+            return $this->display(dirname(__FILE__), '_adminOrderTabLabels16.tpl');
+        }
+    }
+    
+    public function hookActionOrderStatusUpdate($params)
+    {
+        if($params['newOrderStatus']->id == (int)Configuration::get($this->generateVariableName('label on status'))) {
+            $labelController = AdminController::getController('AdminDpdLabelsController');
+            $labelController->generateDefaultLabel($params['id_order']);
+        }
+    }
+    
+    public static function isDpdOrder($order)
+    {
+        $current_carrier = new Carrier($order->id_carrier);
+        
+        return $current_carrier->external_module_name == 'dpdcarrier';
+    }
+    
+    private function isCOD($order) {
+        return $order->module == 'cashondelivery';
+    }
+    
+    private function getInitialOrderSettings($order) {
+        $currenct_carrier = new Carrier($order->id_carrier);
+        
+        $this->loadDis();
+        
+        $result = array();
+        
+        $shipping_services = new DisServices();
+        foreach ($shipping_services->services as $service) {
+        
+            $service_carrier_id = Configuration::get($this->generateVariableName($service->name . ' id'));
+            if($service_carrier_id) {
+                $service_carrier = new Carrier($service_carrier_id);
+                if($currenct_carrier->id_reference == $service_carrier->id_reference) {
+                    $result = $service->shipment_settings;
+                    break;
+                }
+            }
+        }
+        if(count($result) == 0) {
+            $result = $shipping_services->default->shipment_settings;
+        }
+        $result['cod'] = $this->isCOD($order);
+        
+        return $result;
     }
     
     /**
@@ -377,46 +525,62 @@ class DpdCarrier extends CarrierModule
     
     public function loadDis()
     {
-        foreach (preg_grep('/index\.php$/', glob($this->local_path . '/lib/DIS/classes/*.php'), PREG_GREP_INVERT) as $filename) {
+        $files = preg_grep('/index\.php$/', glob($this->local_path . '/lib/DIS/classes/*.php'), PREG_GREP_INVERT);
+        
+        foreach ($files as $filename) {
             require_once($filename);
         }
     }
     
-    private function generateVariableName($input)
+    public function getLogin()
     {
-        return strtoupper($this->name . '_' . str_replace(" ", "_", $input));
+        $this->loadDis();
+        
+        $delisId = Configuration::get('DPD_DIS_delisid');
+        $delisPw = Configuration::get('DPD_DIS_password');
+
+        $url = Configuration::get('DPD_DIS_live_server') == 1 ?
+            'https://public-dis.dpd.nl/Services/' :
+            'https://public-dis-stage.dpd.nl/Services/';
+        
+        return new DisLogin($delisId, $delisPw, $url);
     }
     
-    private function getWeightMultiplier()
+    public function generateVariableName($input)
     {
-      $weight_multiplier = 1;
-      switch(_PS_WEIGHT_UNIT_) {
-          case 'mg':
-              $weight_multiplier = 1000000;
-              break;
-          case 'g':
-              $weight_multiplier = 1000;
-              break;
-          case 'Kg':
-              $weight_multiplier = 1;
-              break;
-          case 'lbs':
-              $weight_multiplier = 0.45359237;
-              break;
-          case 'st':
-              $weight_multiplier = 6.35029318;
-              break;
-          default:
-              $weight_multiplier = 1;
-              break;
-      }
-      return $weight_multiplier;
+        return Tools::strtoupper($this->name . '_' . str_replace(" ", "_", $input));
     }
     
-    private function getDimensionMultiplier() 
+    public function getWeightMultiplier()
+    {
+        $weight_multiplier = 1;
+        switch(configuration::get('PS_WEIGHT_UNIT')) {
+            case 'mg':
+                $weight_multiplier = 1000000;
+                break;
+            case 'g':
+                $weight_multiplier = 1000;
+                break;
+            case 'Kg':
+                $weight_multiplier = 1;
+                break;
+            case 'lbs':
+                $weight_multiplier = 0.45359237;
+                break;
+            case 'st':
+                $weight_multiplier = 6.35029318;
+                break;
+            default:
+                $weight_multiplier = 1;
+                break;
+        }
+        return $weight_multiplier;
+    }
+    
+    public function getDimensionMultiplier()
     {
         $dimension_multiplier = 1;
-        switch(_PS_DIMENSION_UNIT_) {
+        switch(configuration::get('PS_DIMENSION_UNIT')) {
             case 'mm':
                 $dimension_multiplier = 10;
                 break;
@@ -440,5 +604,13 @@ class DpdCarrier extends CarrierModule
                 break;
         }
         return $dimension_multiplier;
+    }
+    
+    public function getParcelShopInfo($cart)
+    {
+        $query = new DbQuery();
+        $query->select('*')->from('dpdcarrier_pickup')->where('id_cart = ' . $cart->id);
+        
+        return Db::getInstance()->getRow($query);
     }
 }
