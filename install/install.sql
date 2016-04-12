@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS `_PREFIX_dpdcarrier_pickup` (
   PRIMARY KEY (`id_cart`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `ps_dpdcarrier_label` (
-  `id_dpdcarrier_label` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `_PREFIX_dpdcarrier_label` (
+  `id_dpdcarrier_label` int(10) NOT NULL AUTO_INCREMENT,
   `id_order` int(10) NOT NULL,
   `parcel_number` varchar(14) NOT NULL,
   `date` datetime NOT NULL,
@@ -25,6 +25,16 @@ CREATE TABLE IF NOT EXISTS `ps_dpdcarrier_label` (
   `id_location` varchar(16) NOT NULL,
   `services` mediumtext NOT NULL,
   `shipped` tinyint(1) NOT NULL DEFAULT '0',
+  `return` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_dpdcarrier_label`),
   UNIQUE KEY `ORDER_PARCEL` (`id_order`,`parcel_number`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `_PREFIX_dpdcarrier_return` (
+  `id_dpdcarrier_return` int(10) NOT NULL AUTO_INCREMENT,
+  `id_order_return` int(10) NOT NULL,
+  `parcel_number` varchar(14) NOT NULL,
+  `date` datetime NOT NULL,
+  PRIMARY KEY (`id_dpdcarrier_label`),
+  UNIQUE KEY `ORDER_PARCEL` (`id_order_return`,`parcel_number`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

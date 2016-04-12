@@ -59,6 +59,9 @@ class DisShipment
       $this->request['printOptions']['paperFormat'] = 'A6';
     }
     
+    $this->request['order']['generalShipmentData']['sender']['zipCode'] = str_replace(' ', '', $this->request['order']['generalShipmentData']['sender']['zipCode']);
+    $this->request['order']['generalShipmentData']['recipient']['zipCode'] = str_replace(' ', '', $this->request['order']['generalShipmentData']['sender']['zipCode']);
+    
     $counter = 0;
     $stop = false;
     while($counter < 2 

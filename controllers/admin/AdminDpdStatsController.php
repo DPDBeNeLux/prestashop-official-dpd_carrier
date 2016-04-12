@@ -52,13 +52,14 @@ class AdminDpdStatsController extends ModuleAdminController
     public function __construct()
     {
         parent::__construct();
+        $this->module->loadHelper();
     }
     
     public function displayAjax()
     {
-        $parcelshop_carrier_id = Configuration::get($this->module->generateVariableName('pickup id'));
-        $classic_carrier_id = Configuration::get($this->module->generateVariableName('home id'));
-        $home_carrier_id = Configuration::get($this->module->generateVariableName('home with predict id'));
+        $parcelshop_carrier_id = Configuration::get(DpdHelper::generateVariableName('pickup id'));
+        $classic_carrier_id = Configuration::get(DpdHelper::generateVariableName('home id'));
+        $home_carrier_id = Configuration::get(DpdHelper::generateVariableName('home with predict id'));
         
         $parcelshop_carrier = new Carrier($parcelshop_carrier_id);
         $classic_carrier = new Carrier($classic_carrier_id);

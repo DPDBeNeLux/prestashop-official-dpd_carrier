@@ -62,7 +62,7 @@ class AdminDpdConfigController extends ModuleAdminController
         parent::__construct();
         $this->mailTemplateUrl = _PS_MODULE_DIR_ . $this->module->name . "/mails/";
         
-        $this->module->loadDis();
+        $this->module->loadHelper();
     }
     
     public function displayAjax()
@@ -103,6 +103,8 @@ class AdminDpdConfigController extends ModuleAdminController
         if (!Tools::getIsset('password') || Tools::getValue('password') =='') {
             $this->output["validation"]["password"] = $this->module->l("Please enter your password.");
         }
+        
+        DpdHelper::loadDis();
         
         if (count($this->output["validation"]) == 0) {
             $url = (bool)Tools::getIsset('dpd-live-account') ?
@@ -162,9 +164,9 @@ class AdminDpdConfigController extends ModuleAdminController
             $id_shop_group = (int)$this->context->shop->getContextShopGroupID();
             $id_shop = (int)$this->context->shop->getContextShopID();
             
-            Configuration::updateValue('DPD_DIS_delisid', Tools::getValue('delisid'), $id_shop_group, $id_shop);
-            Configuration::updateValue('DPD_DIS_password', Tools::getValue('password'), $id_shop_group, $id_shop);
-            Configuration::updateValue('DPD_DIS_live_server', Tools::getIsset('dpd-live-account'), $id_shop_group, $id_shop);
+            Configuration::updateValue(DpdHelper::generateVariableName('delisid'), Tools::getValue('delisid'), $id_shop_group, $id_shop);
+            Configuration::updateValue(DpdHelper::generateVariableName('password'), Tools::getValue('password'), $id_shop_group, $id_shop);
+            Configuration::updateValue(DpdHelper::generateVariableName('live_server'), Tools::getIsset('dpd-live-account'), $id_shop_group, $id_shop);
             
             $this->output["success"]["dis-login-save"] = $this->module->l("User credentials saved.");
         } else {
@@ -174,12 +176,12 @@ class AdminDpdConfigController extends ModuleAdminController
     
     private function updateTTlink()
     {
-        $this->module->loadDis();
+        DpdHelper::loadDis();
         
         $shipping_services = new DisServices();
         foreach ($shipping_services->services as $service)
         {
-            $carrier = new Carrier(Configuration::get($this->module->generateVariableName($service->name . ' id')));
+            $carrier = new Carrier(Configuration::get(DpdHelper::generateVariableName($service->name . ' id')));
             $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' . $this->context->country->iso_code .
                 '&delisId=' . Tools::getValue('delisid') . 
                 '&matchCode=@';

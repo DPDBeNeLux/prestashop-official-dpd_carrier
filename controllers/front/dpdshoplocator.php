@@ -60,8 +60,10 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
     public function init()
     {
         parent::init();
+        
+        $this->module->loadHelper();
 
-        $this->disLogin = $this->module->getLogin();
+        $this->disLogin = DpdHelper::getLogin();
     }
     
     public function displayAjax()
@@ -116,6 +118,8 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         if (Tools::getIsset('time') && Tools::getValue('time') != '') {
             $searchData['TimeOfDay'] = Tools::getValue('time');
         }
+        
+        DpdHelper::loadDis();
         
         $shopFinder = new DisParcelShopFinder($this->disLogin);
         $result = $shopFinder->search($searchData);
