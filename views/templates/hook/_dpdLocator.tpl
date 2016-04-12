@@ -120,7 +120,7 @@
     }
     
     var dpdLocator = new DPD.locator({
-      controller: '{/literal}{$controller_path|escape:'url'}{literal}',
+      controller: '{/literal}{$controller_path}{literal}',
       containerId: 'dpdLocatorContainer',
       fullscreen: false,
       daysOfTheWeek: [
@@ -155,7 +155,7 @@
     $('#carrier_area').ready(function(){
         $('[id^="delivery_option_"]').each(function(index) {
             // if it is parcelshop option
-            if(this.value == '{/literal}{$carrier_id|escape:'url'}{literal},'){
+            if(this.value == '{/literal}{$carrier_id}{literal},'){
                 // If the parcelshop option is selected on load
                 if(this.checked){
                     dpdLocator.showLocator();

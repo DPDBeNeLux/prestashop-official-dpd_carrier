@@ -54,7 +54,7 @@
         var loadLabelInfo = function() {
             var xhr = new XMLHttpRequest();
             
-            xhr.open("POST", "{$controllerUrl|escape:'url'}", true);
+            xhr.open("POST", "{$controllerUrl}", true);
             
             var params = "action=info&id_order={$order->id|escape:'htmlall':'UTF-8'}";
             
@@ -95,7 +95,7 @@
             for(var key in sForm) {
               params += "&" + key + "=" + sForm[key];
             }
-            xhr.open("POST", "{$controllerUrl|escape:'url'}", true);
+            xhr.open("POST", "{$controllerUrl}", true);
             
             //Send the proper header information along with the request
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -345,7 +345,7 @@
             
             var tdPn = document.createElement("td");
             var pnLink = document.createElement("a");
-            pnLink.href = "{$controllerUrl|escape:'url'}&action=download&selected_labels[]=" + data.parcel_number;
+            pnLink.href = "{$controllerUrl}&action=download&selected_labels[]=" + data.parcel_number;
             pnLink.innerHTML = data.parcel_number;
             
             tdPn.appendChild(pnLink);
@@ -406,7 +406,7 @@
     }
 </style>
 <div class="tab-pane" id="labels">
-    <form action="{$controllerUrl|escape:'url'}" method="post" class="form-horizontal well hidden-print">
+    <form action="{$controllerUrl}" method="post" class="form-horizontal well hidden-print">
         <div class="table-responsive">
             <table class="table" id="labels_table">
                 <thead>

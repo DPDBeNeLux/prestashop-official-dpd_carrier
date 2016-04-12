@@ -80,7 +80,7 @@ class DpdCarrier extends CarrierModule
         $this->version = '0.2.0';
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6');
         $this->dependencies = array();
-        $this->name = 'dpdcarrier' //DpdHelper::MODULENAME;
+        $this->name = 'dpdcarrier';//DpdHelper::MODULENAME;
         $this->displayName = $this->l('DPD Carrier 2.0');
         $this->description = $this->l('Description Small');
         $this->author = 'Michiel Van Gucht';
@@ -279,8 +279,8 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionOrderStatusUpdate($params)
     {
-        $labelStatus = (int)Configuration::get(DpdHelper::generateVariableName('label on status');
-        if ($params['newOrderStatus']->id == $labelStatus)) {
+        $labelStatus = (int)Configuration::get(DpdHelper::generateVariableName('label on status'));
+        if ($params['newOrderStatus']->id == $labelStatus) {
             $order = new Order($params['id_order']);
             $labels = DpdHelper::getOrderLabelInfo($order);
             if (count($labels) == 0) {

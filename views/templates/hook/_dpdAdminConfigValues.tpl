@@ -47,8 +47,8 @@
 *}
 <script>
     var dpdAdminConfigValues = {
-        configControllerUrl: "{$configControllerUrl|escape:'url'}",
-        statsControllerUrl: "{$statsControllerUrl|escape:'url'}",
+        configControllerUrl: "{$configControllerUrl}",
+        statsControllerUrl: "{$statsControllerUrl}",
         scrollContainer: document.documentElement,
         scrollOffset: -150
     }

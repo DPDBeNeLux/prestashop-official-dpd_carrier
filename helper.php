@@ -528,7 +528,7 @@ class DpdHelper
                         $parcelInformations = array();
                         if (!is_array($shipment->result->orderResult->shipmentResponses->parcelInformation)) {
                             $parcelInformation = $shipment->result->orderResult->shipmentResponses->parcelInformation;
-                            parcelInformations = array($parcelInformation);
+                            $parcelInformations = array($parcelInformation);
                         } else {
                             $parcelInformations = $shipment->result->orderResult->shipmentResponses->parcelInformation;
                         }
