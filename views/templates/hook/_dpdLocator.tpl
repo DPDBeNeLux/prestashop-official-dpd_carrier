@@ -155,7 +155,7 @@
     $('#carrier_area').ready(function(){
         $('[id^="delivery_option_"]').each(function(index) {
             // if it is parcelshop option
-            if(this.value == '{/literal}{$carrier_id}{literal},'){
+            if(this.value == '{/literal}{$carrier_id|escape:'htmlall':'UTF-8'}{literal},'){
                 // If the parcelshop option is selected on load
                 if(this.checked){
                     dpdLocator.showLocator();

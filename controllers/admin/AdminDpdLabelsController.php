@@ -152,7 +152,7 @@ class AdminDpdLabelsController extends ModuleAdminController
             foreach ($this->_list as $key => $row) {
                 $services = unserialize($row['services']);
                 $service_output = "";
-                foreach($services as $name => $bool) {
+                foreach ($services as $name => $bool) {
                     if ($bool) {
                         $service_output .= " " . $name;
                     }

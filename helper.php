@@ -245,8 +245,8 @@ class DpdHelper
                 }
             }
             copy(
-                dirname(__FILE__) . '/lib/DIS/img/' . Tools::strtolower(str_replace(' ', '_', $service->name)) . '.jpg'
-                , _PS_SHIP_IMG_DIR_ . '/' . (int)$carrier->id . '.jpg'
+                dirname(__FILE__) . '/lib/DIS/img/' . Tools::strtolower(str_replace(' ', '_', $service->name)) . '.jpg',
+                    _PS_SHIP_IMG_DIR_ . '/' . (int)$carrier->id . '.jpg'
             );
               
             Configuration::updateValue(self::generateVariableName($service->name . ' id'), (int)($carrier->id));
@@ -275,8 +275,11 @@ class DpdHelper
     
     public static function loadDis()
     {
-        $files = preg_grep('/index\.php$/', glob(dirname(__FILE__) . DS . 'lib' .
-            DS . 'DIS' . DS . 'classes' . DS . '*.php'), PREG_GREP_INVERT);
+        $files = preg_grep(
+            '/index\.php$/', 
+            glob(dirname(__FILE__) . DS . 'lib' . DS . 'DIS' . DS . 'classes' . DS . '*.php'),
+            PREG_GREP_INVERT
+        );
         
         foreach ($files as $filename) {
             require_once($filename);

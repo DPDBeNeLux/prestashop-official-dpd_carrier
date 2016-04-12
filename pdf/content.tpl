@@ -65,7 +65,7 @@
   <tbody>
     {foreach $list as $key => $row}
     <tr>
-      <td style="width: 20px;">{$key+1}</td>
+      <td style="width: 20px;">{$key+1|escape:'htmlall':'UTF-8'}</td>
       <td style="width: 50px;">{$row['reference']|escape:'htmlall':'UTF-8'}</td>
       <td style="width: 80px;">{$row['parcel_number']|escape:'htmlall':'UTF-8'}</td>
       <td style="width: 30px;">{$row['weight']|escape:'htmlall':'UTF-8'}</td>

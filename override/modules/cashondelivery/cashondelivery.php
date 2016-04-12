@@ -46,7 +46,7 @@
  *                     Ndhyyhd N
  *                        NN
  */
- 
+
 class CashOnDeliveryOverride extends CashOnDelivery
 {
     public function hasProductDownload($cart)

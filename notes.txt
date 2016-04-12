@@ -1,0 +1,1 @@
+//new google.maps.Marker({literal}{map: delivery_map, title: 'test', position: new google.maps.LatLng({/literal}{$shop_info['lat']},{$shop_info['lng']}{literal})});{/literal}
