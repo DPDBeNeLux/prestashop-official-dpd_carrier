@@ -228,7 +228,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionCarrierProcess($params)
     {
-        $currentPickupId = (int)Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'));
+        $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             if (!DpdHelper::getParcelShopInfo($params['cart'])) {
                 $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop before proceeding.');
@@ -238,7 +238,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookDisplayOrderConfirmation($params)
     {
-        $currentPickupId = (int)Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'));
+        $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             $cart = new Cart($params['objOrder']->id_cart);
             $this->context->smarty->assign(
@@ -279,7 +279,8 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionOrderStatusUpdate($params)
     {
-        if ($params['newOrderStatus']->id == (int)Configuration::get(DpdHelper::generateVariableName('label on status'))) {
+        $labelStatus = (int)Configuration::get(DpdHelper::generateVariableName('label on status');
+        if ($params['newOrderStatus']->id == $labelStatus)) {
             $order = new Order($params['id_order']);
             $labels = DpdHelper::getOrderLabelInfo($order);
             if (count($labels) == 0) {
