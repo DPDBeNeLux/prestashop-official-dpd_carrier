@@ -80,7 +80,7 @@ class DpdCarrier extends CarrierModule
         $this->version = '0.2.0';
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6');
         $this->dependencies = array();
-        $this->name = DpdHelper::moduleName;
+        $this->name = "dpdcarrier"; //DpdHelper::moduleName;
         $this->displayName = $this->l('DPD Carrier 2.0');
         $this->description = $this->l('Description Small');
         $this->author = 'Michiel Van Gucht';
