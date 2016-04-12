@@ -49,7 +49,7 @@
 
 class DpdHelper
 {
-    const moduleName = 'dpdcarrier';
+    const MODULENAME = 'dpdcarrier';
     public static function getLabelLocation()
     {
         return _PS_DOWNLOAD_DIR_ . 'dpd';
@@ -67,7 +67,7 @@ class DpdHelper
             $tab->class_name = $name;
             // Hide the tab from the menu.
             $tab->id_parent = -1;
-            $tab->module = self::moduleName;
+            $tab->module = self::MODULENAME;
             
             $tab->name = array();
             foreach (Language::getLanguages(true) as $lang) {
@@ -110,7 +110,7 @@ class DpdHelper
         }
 
         $tab->id_parent = (int)Tab::getIdFromClassName('AdminShipping');
-        $tab->module = self::moduleName;
+        $tab->module = self::MODULENAME;
 
         return $tab->add();
     }
@@ -170,13 +170,13 @@ class DpdHelper
         
             $carrier = new Carrier();
             $carrier->name = $service->name;
-            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $language_iso . '_' . 
+            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $language_iso . '_' .
                 $country_iso .'&query=@';
             $carrier->active = true;
             $carrier->shipping_handling = true;
             $carrier->range_behavior = 0;
             $carrier->shipping_external = false;
-            $carrier->external_module_name = self::moduleName;
+            $carrier->external_module_name = self::MODULENAME;
             $carrier->need_range = false;
             $carrier->max_width = $max_width * $dimension_multiplier;
             $carrier->max_height = $max_height * $dimension_multiplier;
@@ -229,17 +229,17 @@ class DpdHelper
 
                     foreach ($ranges as $range) {
                         Db::getInstance()->insert(
-                            'delivery'
-                            , array(
-                                'id_carrier' => $carrier->id
-                                ,'id_range_price' => null
-                                ,'id_range_weight' => (int)$range->id
-                                ,'id_zone' => (int)$zone->id
-                                ,'price' => '0'
-                            )
-                            , true
-                            , true
-                            , Db::ON_DUPLICATE_KEY
+                            'delivery',
+                            array(
+                                'id_carrier' => $carrier->id,
+                                'id_range_price' => null,
+                                'id_range_weight' => (int)$range->id,
+                                'id_zone' => (int)$zone->id,
+                                'price' => '0'
+                            ),
+                            true,
+                            true,
+                            Db::ON_DUPLICATE_KEY
                         );
                     }
                 }
@@ -275,7 +275,8 @@ class DpdHelper
     
     public static function loadDis()
     {
-        $files = preg_grep('/index\.php$/', glob(dirname(__FILE__) . DS . 'lib' . DS . 'DIS' . DS . 'classes' . DS . '*.php'), PREG_GREP_INVERT);
+        $files = preg_grep('/index\.php$/', glob(dirname(__FILE__) . DS . 'lib' .
+            DS . 'DIS' . DS . 'classes' . DS . '*.php'), PREG_GREP_INVERT);
         
         foreach ($files as $filename) {
             require_once($filename);
@@ -315,7 +316,7 @@ class DpdHelper
     {
         $result = array();
         
-        foreach($source as $key => $item){
+        foreach ($source as $key => $item) {
             $result[$key] = (is_array($item) ? self::copyArray($item) : $item);
         }
         
@@ -343,17 +344,14 @@ class DpdHelper
     public static function generateReturnLabel($orderReturn)
     {
         $order = new Order($orderReturn->id_order);
-        $order_carrier = new OrderCarrier($order->getIdOrderCarrier());
         $prefix = Configuration::get('PS_RETURN_PREFIX', Context::getContext()->language->id);
         $return_ref = sprintf('%1$s%2$06d', $prefix, $orderReturn->id);
+        
+        $label_settings = array();
         
         $label_settings['return_ref'] = $return_ref;
         $label_settings['id_order_return'] = $orderReturn->id_order;
         $label_settings['count'] = 1;
-        $label_settings['weight'] = 0;
-        $label_settings['length'] = 0;
-        $label_settings['height'] = 0;
-        $label_settings['depth'] = 0;
         
         return self::generateLabels($order, $label_settings);
     }
@@ -361,7 +359,6 @@ class DpdHelper
     public static function generateLabels($order, $label_settings)
     {
         if (self::isDpdOrder($order) || isset($label_settings['return_ref'])) {
-            $current_carrier = new Carrier($order->id_carrier);
             $order_carrier = new OrderCarrier($order->getIdOrderCarrier());
             
             $disLogin = self::getLogin();
@@ -417,12 +414,14 @@ class DpdHelper
                 $shipment->request['order']['parcels']['customerReferenceNumber1'] = $order->reference;
                 
                 if (isset($label_settings['return_ref']) && (string)$label_settings['return_ref'] != '') {
-                    $shipment->request['order']['parcels']['customerReferenceNumber2'] = $label_settings['return_ref']; //TODO: Add substring to cut off.
+                    //TODO: Add substring to cut off.
+                    $shipment->request['order']['parcels']['customerReferenceNumber2'] = $label_settings['return_ref'];
                     $shipment->request['order']['parcels']['returns'] = true;
                 }
                 
                 if (isset($label_settings['weight']) && (float)$label_settings['weight'] != 0) {
-                    $shipment->request['order']['parcels']['weight'] = (int)($label_settings['weight'] * (100 / self::getWeightMultiplier()));
+                    $weight = (int)($label_settings['weight'] * (100 / self::getWeightMultiplier()));
+                    $shipment->request['order']['parcels']['weight'] = $weight;
                 }
                 
                 if (isset($label_settings['length']) && $label_settings['length'] != 0
@@ -432,56 +431,56 @@ class DpdHelper
                     $multiplier = self::getDimensionMultiplier();
                     
                     $length = str_pad(
-                        (int)($label_settings['length'] / $multiplier)
-                        , 3
-                        , '0'
-                        , STR_PAD_LEFT
+                        (int)($label_settings['length'] / $multiplier),
+                        3,
+                        '0',
+                        STR_PAD_LEFT
                     );
                     
                     $height = str_pad(
-                        (int)($label_settings['height'] / $multiplier)
-                        , 3
-                        , '0'
-                        , STR_PAD_LEFT
+                        (int)($label_settings['height'] / $multiplier),
+                        3,
+                        '0',
+                        STR_PAD_LEFT
                     );
                     
                     $depth = str_pad(
-                        (int)($label_settings['depth'] / $multiplier)
-                        , 3
-                        , '0'
-                        , STR_PAD_LEFT
+                        (int)($label_settings['depth'] / $multiplier),
+                        3,
+                        '0',
+                        STR_PAD_LEFT
                     );
                     
-                    $shipment->request['order']['parcels']['volume'] = $length . $height . $depth; 
+                    $shipment->request['order']['parcels']['volume'] = $length . $height . $depth;
                 }
                 
                 $label_count = (int)$label_settings['count'];
                 
-                if (isset($label_settings['cod'])  && $label_settings['cod'] 
+                if (isset($label_settings['cod'])  && $label_settings['cod']
                     && isset($label_settings['value']) && (float)$label_settings['value'] > 0) {
-                        $currency = new Currency($order->id_currency);
-                        $shipment->request['order']['parcels']['cod'] = array(
-                            'amount' => (int)((float)$label_settings['value'] * 100)
-                            ,'currency' => Tools::strtoupper($currency->iso_code)
-                            ,'inkasso' => 0
-                            
-                        );
+                    $currency = new Currency($order->id_currency);
+                    $shipment->request['order']['parcels']['cod'] = array(
+                        'amount' => (int)((float)$label_settings['value'] * 100)
+                        ,'currency' => Tools::strtoupper($currency->iso_code)
+                        ,'inkasso' => 0
                         
-                        if ($label_count > 1) {
-                            $parcel_data = $shipment->request['order']['parcels'];
-                            $shipment->request['order']['parcels'] = array();
-                            for ($i = 0; $i < $label_count; $i++) {
-                                $shipment->request['order']['parcels'][] = self::copyArray($parcel_data);
-                            }
-                            
-                            $label_count = 1;
+                    );
+                    
+                    if ($label_count > 1) {
+                        $parcel_data = $shipment->request['order']['parcels'];
+                        $shipment->request['order']['parcels'] = array();
+                        for ($i = 0; $i < $label_count; $i++) {
+                            $shipment->request['order']['parcels'][] = self::copyArray($parcel_data);
                         }
+                        
+                        $label_count = 1;
+                    }
                 }
                 
                 $notification_lang_ISO = Language::getIsoById($order->id_lang);
                 $notification = self::getNotificationData($recipient_customer, $notification_lang_ISO);
                 
-                if (isset($label_settings['dps']) && $label_settings['dps'] 
+                if (isset($label_settings['dps']) && $label_settings['dps']
                     && isset($label_settings['id_location']) && $label_settings['id_location'] != '') {
                         $shipment->request['order']['productAndServiceData']['parcelShopDelivery']['parcelShopId'] = $label_settings['id_location'];
                         $shipment->request['order']['productAndServiceData']['parcelShopDelivery']['parcelShopNotification'] = $notification;
@@ -515,29 +514,32 @@ class DpdHelper
                         $shipment->send();
                     } catch (Exception $e) {
                         Logger::addLog(
-                            'Something went wrong while generating a DPD Label (' . $e->getMessage() . ')'
-                            , 3
-                            , null
-                            , null
-                            , null
-                            , true
+                            'Something went wrong while generating a DPD Label (' . $e->getMessage() . ')',
+                            3,
+                            null,
+                            null,
+                            null,
+                            true
                         );
                         return false;
                     }
                     
                     if (isset($shipment->result->orderResult)) {
+                        $parcelInformations = array();
                         if (!is_array($shipment->result->orderResult->shipmentResponses->parcelInformation)) {
                             $parcelInformation = $shipment->result->orderResult->shipmentResponses->parcelInformation;
-                            $shipment->result->orderResult->shipmentResponses->parcelInformation = array($parcelInformation);
+                            parcelInformations = array($parcelInformation);
+                        } else {
+                            $parcelInformations = $shipment->result->orderResult->shipmentResponses->parcelInformation;
                         }
-                        foreach($shipment->result->orderResult->shipmentResponses->parcelInformation as $key => $parcelInformation) {
+                        foreach ($parcelInformations as $key => $parcelInformation) {
                             // TODO: check if the pdf is written!
                             self::createPDF($shipment, $key);
                             
                             $parcel_label_number = $parcelInformation->parcelLabelNumber;
                             $date = date("Y-m-d H:i:s");
                             
-                            if(isset($label_settings['return_ref']) && $label_settings['return_ref'] != '') {
+                            if (isset($label_settings['return_ref']) && $label_settings['return_ref'] != '') {
                                 self::createJPG((string)$parcel_label_number);
                                 
                                 Db::getInstance()->insert(
@@ -616,26 +618,27 @@ class DpdHelper
           && isset($shipment->result->orderResult->shipmentResponses->parcelInformation)
           && isset($shipment->result->orderResult->shipmentResponses->parcelInformation[$key]->parcelLabelNumber)) {
             
-            $parcel_label_number = $shipment->result->orderResult->shipmentResponses->parcelInformation[$key]->parcelLabelNumber;
+            $responses = $shipment->result->orderResult->shipmentResponses;
+            $parcel_label_number = $responses->parcelInformation[$key]->parcelLabelNumber;
             if (!($new_pdf = fopen(self::getLabelLocation() . DS . $parcel_label_number . '.pdf', 'w'))) {
                 Logger::addLog(
-                    'The new PDF (DPD Label) file could not be created on the file system'
-                    , 3
-                    , null
-                    , null
-                    , null
-                    , true
+                    'The new PDF (DPD Label) file could not be created on the file system',
+                    3,
+                    null,
+                    null,
+                    null,
+                    true
                 );
                 return false;
             }
             if (!fwrite($new_pdf, $shipment->result->orderResult->parcellabelsPDF)) {
                 Logger::addLog(
-                    'The new PDF (DPD Label) file could not be written to file system'
-                    , 3
-                    , null
-                    , null
-                    , null
-                    , true
+                    'The new PDF (DPD Label) file could not be written to file system',
+                    3,
+                    null,
+                    null,
+                    null,
+                    true
                 );
                 return false;
             }
@@ -659,23 +662,23 @@ class DpdHelper
         
         if (!($new_jpg = fopen(self::getLabelLocation() . DS . $parcel_number . '.jpg', 'w'))) {
             Logger::addLog(
-                'The new JPG (DPD Label) file could not be created on the file system'
-                , 3
-                , null
-                , null
-                , null
-                , true
+                'The new JPG (DPD Label) file could not be created on the file system',
+                3,
+                null,
+                null,
+                null,
+                true
             );
             return false;
         }
         if (!fwrite($new_jpg, $im)) {
             Logger::addLog(
-                'The new JPG (DPD Label) file could not be written to file system'
-                , 3
-                , null
-                , null
-                , null
-                , true
+                'The new JPG (DPD Label) file could not be written to file system',
+                3,
+                null,
+                null,
+                null,
+                true
             );
             return false;
         }
@@ -721,23 +724,30 @@ class DpdHelper
             
             $pdf = new FPDI();
             
-            foreach ($range as $count => $label_number) {
+            // TODO: add prepend and append pages to pdf.
+            
+            $count = 0;
+            foreach ($range as $label_number) {
                 $file = self::getLabelLocation() . DS . $label_number . '.pdf';
                 if (file_exists($file)) {
                     $pageCount = $pdf->setSourceFile($file);
-                    $tplIdx = $pdf->importPage(1);
                     
-                    if( $size == 'A6' 
-                        || ($size == 'A4' && ($count % 4) == 0)) {
+                    for ($i = 1; $i <= $pageCount; $i++) {
+                        $tplIdx = $pdf->importPage($i);
+                        
+                        if ($size == 'A6'
+                            || ($size == 'A4' && ($count % 4) == 0)) {
                             $pdf->addPage('P', $size);
+                        }
+                        $binCount = str_pad(decbin($count+1), 2, 0, STR_PAD_LEFT);
+                        $firstBit = (int)Tools::substr($binCount, -1);
+                        $secondBit = (int)Tools::substr($binCount, -2, 1);
+                        
+                        $verticalPos = !($firstBit xor $secondBit);
+                        $pdf->useTemplate($tplIdx, !$firstBit * 105, $verticalPos * 148);
+                        
+                        $count++;
                     }
-                    $binCount = str_pad(decbin($count+1),2,0, STR_PAD_LEFT);
-                    $firstBit = (int)substr($binCount, -1);
-                    $secondBit = (int)substr($binCount, -2, 1);
-                    
-                    
-                    $verticalPos = !($firstBit xor $secondBit);
-                    $pdf->useTemplate($tplIdx, !$firstBit * 105, $verticalPos * 148);
                 } else {
                     Logger::addLog('Label ' . $label_number . ' not found on file system.', 2, null, null, null, true);
                 }
@@ -758,7 +768,7 @@ class DpdHelper
         $data = Db::getInstance()->query($query)->fetchAll(PDO::FETCH_ASSOC);
         $result = array();
         if ($data) {
-            foreach($data as $key => $row) {
+            foreach ($data as $key => $row) {
                 $result[$key] = $row;
                 $result[$key]['services'] = unserialize($row['services']);
             }
@@ -769,11 +779,11 @@ class DpdHelper
     public static function getLabelInfo($range)
     {
         $list = '(';
-        foreach($range as $key => $label_number) {
+        foreach ($range as $key => $label_number) {
             if ($key != 0) {
                 $list .= ',';
             }
-            $list .= '\'' . $label_number . '\''; 
+            $list .= '\'' . $label_number . '\'';
         }
         $list .= ')';
         $query = new DbQuery();
@@ -788,18 +798,19 @@ class DpdHelper
         
         $result = array();
         if ($data) {
-            foreach($data as $key => $row) {
+            foreach ($data as $key => $row) {
                 $result[$key] = $row;
                 
                 $country_iso = Country::getIsoById($row['id_country']);
                 
                 $result[$key]['recipient'] = $data[$key]['firstname'] . " " . $data[$key]['lastname'];
-                $result[$key]['address'] = $data[$key]['address1'] . ", " . $country_iso .'-' . $data[$key]['postcode'] . " " . $data[$key]['city'];
+                $result[$key]['address'] = $data[$key]['address1'] . ", " . $country_iso .'-' .
+                    $data[$key]['postcode'] . " " . $data[$key]['city'];
                 
                 $services = unserialize($row['services']);
                 $service_output = "";
-                foreach($services as $name => $bool) {
-                    if($bool) {
+                foreach ($services as $name => $bool) {
+                    if ($bool) {
                         $service_output .= " " . $name;
                     }
                 }
@@ -880,7 +891,7 @@ class DpdHelper
     
     public static function generateVariableName($input)
     {
-        return Tools::strtoupper(self::moduleName . '_' . str_replace(" ", "_", $input));
+        return Tools::strtoupper(self::MODULENAME . '_' . str_replace(" ", "_", $input));
     }
     
     public static function getParcelShopInfo($cart)
@@ -898,11 +909,13 @@ class DpdHelper
         return $current_carrier->external_module_name == 'dpdcarrier';
     }
     
-    private static function isCOD($order) {
+    private static function isCOD($order)
+    {
         return $order->module == 'cashondelivery';
     }
     
-    public static function getInitialOrderSettings($order) {
+    public static function getInitialOrderSettings($order)
+    {
         $currenct_carrier = new Carrier($order->id_carrier);
         
         $result = array();
@@ -911,15 +924,15 @@ class DpdHelper
         foreach ($shipping_services->services as $service) {
         
             $service_carrier_id = Configuration::get(self::generateVariableName($service->name . ' id'));
-            if($service_carrier_id) {
+            if ($service_carrier_id) {
                 $service_carrier = new Carrier($service_carrier_id);
-                if($currenct_carrier->id_reference == $service_carrier->id_reference) {
+                if ($currenct_carrier->id_reference == $service_carrier->id_reference) {
                     $result = $service->shipment_settings;
                     break;
                 }
             }
         }
-        if(count($result) == 0) {
+        if (count($result) == 0) {
             $result = $shipping_services->default->shipment_settings;
         }
         $result['cod'] = self::isCOD($order);

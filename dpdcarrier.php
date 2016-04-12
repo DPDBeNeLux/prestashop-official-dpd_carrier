@@ -80,7 +80,7 @@ class DpdCarrier extends CarrierModule
         $this->version = '0.2.0';
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6');
         $this->dependencies = array();
-        $this->name = DpdHelper::moduleName;
+        $this->name = 'dpdcarrier' //DpdHelper::MODULENAME;
         $this->displayName = $this->l('DPD Carrier 2.0');
         $this->description = $this->l('Description Small');
         $this->author = 'Michiel Van Gucht';
@@ -144,7 +144,7 @@ class DpdCarrier extends CarrierModule
     public function uninstall()
     {
         
-        if (!parent::uninstall()){
+        if (!parent::uninstall()) {
             $this->warning[] = "Could not run parent uninstaller successfully.";
         }
         
@@ -211,9 +211,9 @@ class DpdCarrier extends CarrierModule
         $this->context->controller->addJS($this->_path.'lib/DIS/js/dpdParcelshopLocator.js');
         
         $controller_path = $this->context->link->getModuleLink(
-            'dpdcarrier'
-            , 'dpdshoplocator'
-            , array('ajax' => 'true')
+            'dpdcarrier',
+            'dpdshoplocator',
+            array('ajax' => 'true')
         );
         
         $this->context->smarty->assign(
@@ -228,7 +228,8 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionCarrierProcess($params)
     {
-        if ((int)($params['cart']->id_carrier) == (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')))) {
+        $currentPickupId = (int)Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'));
+        if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             if (!DpdHelper::getParcelShopInfo($params['cart'])) {
                 $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop before proceeding.');
             }
@@ -237,7 +238,8 @@ class DpdCarrier extends CarrierModule
     
     public function hookDisplayOrderConfirmation($params)
     {
-        if ((int)($params['cart']->id_carrier) == (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')))) {
+        $currentPickupId = (int)Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'));
+        if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             $cart = new Cart($params['objOrder']->id_cart);
             $this->context->smarty->assign(
                 array(
@@ -277,7 +279,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionOrderStatusUpdate($params)
     {
-        if($params['newOrderStatus']->id == (int)Configuration::get(DpdHelper::generateVariableName('label on status'))) {
+        if ($params['newOrderStatus']->id == (int)Configuration::get(DpdHelper::generateVariableName('label on status'))) {
             $order = new Order($params['id_order']);
             $labels = DpdHelper::getOrderLabelInfo($order);
             if (count($labels) == 0) {
@@ -290,7 +292,7 @@ class DpdCarrier extends CarrierModule
     {
         $result = DpdHelper::generateReturnLabel($params['object']);
         
-        if($result) {
+        if ($result) {
             $label_image = DpdHelper::getLabelLocation() . DS . $result[0]['parcel_number'] .'.jpg';
         } else {
             $label_image = false;

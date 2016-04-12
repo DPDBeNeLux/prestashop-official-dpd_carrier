@@ -49,7 +49,8 @@
 
 class HTMLTemplateDpdShippingList extends HTMLTemplate
 {
-    public function __construct($object, $smarty, $bulk_mode = false) {
+    public function __construct($object, $smarty)
+    {
         $this->smarty = $smarty;
         $this->title = 'DPD Shipping List';
         $this->date = date('d-m-Y H:i:s');
@@ -73,7 +74,7 @@ class HTMLTemplateDpdShippingList extends HTMLTemplate
     
     public function assignHookData($object)
     {
-        $template = ucfirst(str_replace('HTMLTemplate', '', get_class($this)));
+        $template = Tools::ucfirst(str_replace('HTMLTemplate', '', get_class($this)));
         $hook_name = 'displayPDF'.$template;
 
         $this->smarty->assign(array(
@@ -120,7 +121,12 @@ class HTMLTemplateDpdShippingList extends HTMLTemplate
             'shop_fax' => Configuration::get('PS_SHOP_FAX', null, null, $id_shop),
             'shop_phone' => Configuration::get('PS_SHOP_PHONE', null, null, $id_shop),
             'shop_email' => Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
-            'free_text' => Configuration::get('PS_INVOICE_FREE_TEXT', (int)Context::getContext()->language->id, null, $id_shop)
+            'free_text' => Configuration::get(
+                'PS_INVOICE_FREE_TEXT',
+                (int)Context::getContext()->language->id,
+                null,
+                $id_shop
+            )
         ));
 
         return $this->smarty->fetch($this->getTemplate('footer'));

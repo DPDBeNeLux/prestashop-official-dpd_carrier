@@ -49,7 +49,7 @@
 <tr>
 	<td style="width: 50%">
 		{if $logo_path}
-			<img src="{$logo_path}" style="width:{$width_logo}px; height:{$height_logo}px;" />
+			<img src="{$logo_path|escape:'url'}" style="width:{$width_logo|escape:'htmlall'}px; height:{$height_logo|escape:'htmlall'}px;" />
 		{/if}
 	</td>
 	<td style="width: 50%; text-align: right;">

@@ -207,8 +207,8 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             $dbInstance = Db::getInstance();
             
             $dbInstance->insert(
-                'dpdcarrier_pickup'
-                , array(
+                'dpdcarrier_pickup',
+                array(
                     'id_cart' => $dbInstance->escape($id_cart)
                     ,'id_carrier' => $dbInstance->escape($id_carrier)
                     ,'id_location' => $dbInstance->escape($id_location)
@@ -219,10 +219,10 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                     ,'city' => $dbInstance->escape($shop->city)
                     ,'postcode' => $dbInstance->escape($shop->zipCode)
                     ,'iso_code' => $dbInstance->escape($shop->isoAlpha2)
-                )
-                , false
-                , true
-                , Db::ON_DUPLICATE_KEY
+                ),
+                false,
+                true,
+                Db::ON_DUPLICATE_KEY
             );
             
             $this->output['data'] = '<p>' . $this->module->l('You have chosen') .
@@ -260,12 +260,12 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                     'Customer, ' . $this->context->customer->firstname . ' ' .
                     $this->context->customer->lastname . ' (' .
                     $this->context->customer->id . '), tried to use a shop ID that wasn\'t proposed to him (' .
-                    Tools::getValue('dpdshopid') . ')'
-                    , 2
-                    , null
-                    , null
-                    , null
-                    , true
+                    Tools::getValue('dpdshopid') . ')',
+                    2,
+                    null,
+                    null,
+                    null,
+                    true
                 );
                 return false;
             }

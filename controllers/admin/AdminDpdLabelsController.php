@@ -57,7 +57,8 @@ class AdminDpdLabelsController extends ModuleAdminController
         ,"validation" => array()
     );
     
-    protected function processBulkPrintLabels() {
+    protected function processBulkPrintLabels()
+    {
         if (is_array($this->boxes) && !empty($this->boxes)) {
             if (ob_get_level() && ob_get_length() > 0) {
                 ob_clean();
@@ -66,7 +67,8 @@ class AdminDpdLabelsController extends ModuleAdminController
         }
     }
     
-    protected function processBulkPrintList() {
+    protected function processBulkPrintList()
+    {
         if (is_array($this->boxes) && !empty($this->boxes)) {
             $data = DpdHelper::getLabelInfo($this->boxes);
             DpdHelper::loadShippingListTemplate();
@@ -97,7 +99,7 @@ class AdminDpdLabelsController extends ModuleAdminController
             ,'height' => array('title' => $this->l('Height'), 'class' => 'fixed-width-xs')
             ,'depth' => array('title' => $this->l('Depth'), 'class' => 'fixed-width-xs')
             ,'value' => array(
-                'title' => $this->l('Value') 
+                'title' => $this->l('Value')
                 ,'class' => 'fixed-width-xs'
                 ,'type' => 'price'
                 ,'currency' => true
@@ -132,7 +134,8 @@ class AdminDpdLabelsController extends ModuleAdminController
         
         $this->table = 'dpdcarrier_label';
         $this->_select = 'pso.*, CONCAT_WS(\' \', psa.lastname, psa.address1, psa.postcode, psa.city) as address';
-        $this->_join = 'JOIN '._DB_PREFIX_.'orders AS pso ON a.id_order = pso.id_order JOIN '._DB_PREFIX_.'address AS psa ON pso.id_address_delivery = psa.id_address';
+        $this->_join = 'JOIN '._DB_PREFIX_.'orders AS pso ON a.id_order = pso.id_order JOIN '._DB_PREFIX_.
+            'address AS psa ON pso.id_address_delivery = psa.id_address';
         $this->_where = 'AND shipped <> 1';
         $this->_defaultOrderBy = 'a.id_order';
         
@@ -143,14 +146,14 @@ class AdminDpdLabelsController extends ModuleAdminController
     
     public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
     {
-        parent::getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false);
+        parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
         
         if ($this->_list) {
-            foreach($this->_list as $key => $row) {
-                $services = unserialize($this->_list[$key]['services']);
+            foreach ($this->_list as $key => $row) {
+                $services = unserialize($row['services']);
                 $service_output = "";
                 foreach($services as $name => $bool) {
-                    if($bool) {
+                    if ($bool) {
                         $service_output .= " " . $name;
                     }
                 }
@@ -193,7 +196,6 @@ class AdminDpdLabelsController extends ModuleAdminController
                 default:
                     Tools::redirect(__PS_BASE_URI__);
                     die;
-                    break;
             }
         } else {
             Tools::redirect(__PS_BASE_URI__);
@@ -206,7 +208,7 @@ class AdminDpdLabelsController extends ModuleAdminController
     
     private function generateLabels()
     {
-        if (!Tools::getIsset('label_count') || (int)Tools::getValue('label_count') <= 0 ) {
+        if (!Tools::getIsset('label_count') || (int)Tools::getValue('label_count') <= 0) {
                 $this->output["validation"]["label_count"] = "Please enter the amount of labels you need.";
         }
         if (!Tools::getIsset('label_weight') || (float)Tools::getValue('label_weight') < 0) {
@@ -218,6 +220,8 @@ class AdminDpdLabelsController extends ModuleAdminController
         
         if (count($this->output["validation"]) == 0) {
             $order = new Order(Tools::getValue('id_order'));
+            $label_settings = array();
+            
             $label_settings['count'] = (int)Tools::getValue('label_count');
             
             if (Tools::getIsset('label_weight')) {

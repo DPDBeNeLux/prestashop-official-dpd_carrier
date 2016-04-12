@@ -49,34 +49,34 @@
   <thead>
     <tr>
       <th style="width: 20px;"></th>
-      <th style="width: 50px;">{l s='Order Ref'}</th>
-      <th style="width: 80px;">{l s='Parcel Number'}</th>
-      <th style="width: 30px;">{l s='Weight'}</th>
-      <th style="width: 30px;">{l s='Length'}</th>
-      <th style="width: 30px;">{l s='Height'}</th>
-      <th style="width: 30px;">{l s='Depth'}</th>
-      <th style="width: 30px;">{l s='Value'}</th>
-      <th style="width: 50px;">{l s='Location'}</th>
-      <th style="width: 100px;">{l s='Recipient'}</th>
-      <th style="width: 200px;">{l s='Address'}</th>
-      <th style="width: 80px;">{l s='Services'}</th>
+      <th style="width: 50px;">{l s='Order Ref' mod='dpdcarrier'}</th>
+      <th style="width: 80px;">{l s='Parcel Number' mod='dpdcarrier'}</th>
+      <th style="width: 30px;">{l s='Weight' mod='dpdcarrier'}</th>
+      <th style="width: 30px;">{l s='Length' mod='dpdcarrier'}</th>
+      <th style="width: 30px;">{l s='Height' mod='dpdcarrier'}</th>
+      <th style="width: 30px;">{l s='Depth' mod='dpdcarrier'}</th>
+      <th style="width: 30px;">{l s='Value' mod='dpdcarrier'}</th>
+      <th style="width: 50px;">{l s='Location' mod='dpdcarrier'}</th>
+      <th style="width: 100px;">{l s='Recipient' mod='dpdcarrier'}</th>
+      <th style="width: 200px;">{l s='Address' mod='dpdcarrier'}</th>
+      <th style="width: 80px;">{l s='Services' mod='dpdcarrier'}</th>
     </tr>      
   </thead>
   <tbody>
     {foreach $list as $key => $row}
     <tr>
       <td style="width: 20px;">{$key+1}</td>
-      <td style="width: 50px;">{$row['reference']}</td>
-      <td style="width: 80px;">{$row['parcel_number']}</td>
-      <td style="width: 30px;">{$row['weight']}</td>
-      <td style="width: 30px;">{$row['length']}</td>
-      <td style="width: 30px;">{$row['height']}</td>
-      <td style="width: 30px;">{$row['depth']}</td>
-      <td style="width: 30px;">{$row['value']}</td>
-      <td style="width: 50px;">{$row['id_location']}</td>
-      <td style="width: 100px;">{$row['recipient']}</td>
-      <td style="width: 200px;">{$row['address']}</td>
-      <td style="width: 80px;">{$row['services']}</td>
+      <td style="width: 50px;">{$row['reference']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 80px;">{$row['parcel_number']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 30px;">{$row['weight']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 30px;">{$row['length']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 30px;">{$row['height']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 30px;">{$row['depth']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 30px;">{$row['value']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 50px;">{$row['id_location']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 100px;">{$row['recipient']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 200px;">{$row['address']|escape:'htmlall':'UTF-8'}</td>
+      <td style="width: 80px;">{$row['services']|escape:'htmlall':'UTF-8'}</td>
     </tr>
     {/foreach}
   </tbody>

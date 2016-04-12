@@ -60,14 +60,14 @@ class PdfOrderReturnController extends PdfOrderReturnControllerCore
         
         $temp = tmpfile();
         fwrite($temp, $page1);
-        fseek($temp,0);
+        fseek($temp, 0);
         $meta_data = stream_get_meta_data($temp);
         $filename = $meta_data["uri"];
         
         $pdfi = new FPDI();
         
         $pageCount = $pdfi->setSourceFile($filename);
-        for($i = 1; $i < $pageCount+1; $i++) {
+        for ($i = 1; $i < $pageCount+1; $i++) {
             $tplIdx = $pdfi->importPage($i, '/MediaBox');
         }
 

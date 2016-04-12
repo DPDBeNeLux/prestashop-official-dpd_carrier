@@ -72,7 +72,10 @@ class AdminDpdStatsController extends ModuleAdminController
         
         $query = 'SELECT 
                 `psc`.`id_reference`
-                ,(SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'dpdcarrier_label` WHERE `id_order` = `psoc`.`id_order`) as `label_count`
+                ,(SELECT 
+                    COUNT(*) 
+                    FROM `' . _DB_PREFIX_ . 'dpdcarrier_label` 
+                    WHERE `id_order` = `psoc`.`id_order`) as `label_count`
                 ,COUNT(*) as `order_count`
                 ,MIN(`psoc`.`date_add`) as `first_order`
                 ,MAX(`psoc`.`date_add`) as `last_order`
@@ -92,7 +95,7 @@ class AdminDpdStatsController extends ModuleAdminController
         $result = array();
         
         if (count($query_result) > 0) {
-            foreach ($query_result as $row => $data) {
+            foreach ($query_result as $data) {
                 $carrier = Carrier::getCarrierByReference($data['id_reference']);
                 if ($carrier) {
                     $result[$carrier->name]['checkout'] = $data['order_count'];
@@ -104,5 +107,5 @@ class AdminDpdStatsController extends ModuleAdminController
         echo Tools::jsonEncode($result);
         die;
     }
-    
 }
+

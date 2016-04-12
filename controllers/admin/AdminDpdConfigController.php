@@ -164,9 +164,24 @@ class AdminDpdConfigController extends ModuleAdminController
             $id_shop_group = (int)$this->context->shop->getContextShopGroupID();
             $id_shop = (int)$this->context->shop->getContextShopID();
             
-            Configuration::updateValue(DpdHelper::generateVariableName('delisid'), Tools::getValue('delisid'), $id_shop_group, $id_shop);
-            Configuration::updateValue(DpdHelper::generateVariableName('password'), Tools::getValue('password'), $id_shop_group, $id_shop);
-            Configuration::updateValue(DpdHelper::generateVariableName('live_server'), Tools::getIsset('dpd-live-account'), $id_shop_group, $id_shop);
+            Configuration::updateValue(
+                DpdHelper::generateVariableName('delisid'),
+                Tools::getValue('delisid'),
+                $id_shop_group,
+                $id_shop
+            );
+            Configuration::updateValue(
+                DpdHelper::generateVariableName('password'),
+                Tools::getValue('password'),
+                $id_shop_group,
+                $id_shop
+            );
+            Configuration::updateValue(
+                DpdHelper::generateVariableName('live_server'),
+                Tools::getIsset('dpd-live-account'),
+                $id_shop_group,
+                $id_shop
+            );
             
             $this->output["success"]["dis-login-save"] = $this->module->l("User credentials saved.");
         } else {
@@ -179,11 +194,11 @@ class AdminDpdConfigController extends ModuleAdminController
         DpdHelper::loadDis();
         
         $shipping_services = new DisServices();
-        foreach ($shipping_services->services as $service)
-        {
+        foreach ($shipping_services->services as $service) {
             $carrier = new Carrier(Configuration::get(DpdHelper::generateVariableName($service->name . ' id')));
-            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' . $this->context->country->iso_code .
-                '&delisId=' . Tools::getValue('delisid') . 
+            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' .
+                $this->context->country->iso_code .
+                '&delisId=' . Tools::getValue('delisid') .
                 '&matchCode=@';
             $carrier->save();
         }
