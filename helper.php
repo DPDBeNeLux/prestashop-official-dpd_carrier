@@ -246,7 +246,7 @@ class DpdHelper
             }
             copy(
                 dirname(__FILE__) . '/lib/DIS/img/' . Tools::strtolower(str_replace(' ', '_', $service->name)) . '.jpg',
-                    _PS_SHIP_IMG_DIR_ . '/' . (int)$carrier->id . '.jpg'
+                _PS_SHIP_IMG_DIR_ . '/' . (int)$carrier->id . '.jpg'
             );
               
             Configuration::updateValue(self::generateVariableName($service->name . ' id'), (int)($carrier->id));
@@ -276,7 +276,7 @@ class DpdHelper
     public static function loadDis()
     {
         $files = preg_grep(
-            '/index\.php$/', 
+            '/index\.php$/',
             glob(dirname(__FILE__) . DS . 'lib' . DS . 'DIS' . DS . 'classes' . DS . '*.php'),
             PREG_GREP_INVERT
         );
@@ -531,10 +531,11 @@ class DpdHelper
                         $parcelInformations = array();
                         if (!is_array($shipment->result->orderResult->shipmentResponses->parcelInformation)) {
                             $parcelInformation = $shipment->result->orderResult->shipmentResponses->parcelInformation;
-                            $parcelInformations = array($parcelInformation);
-                        } else {
-                            $parcelInformations = $shipment->result->orderResult->shipmentResponses->parcelInformation;
+                            $shipment->result->orderResult->shipmentResponses->parcelInformation = array($parcelInformation);
                         }
+                        
+                        $parcelInformations = $shipment->result->orderResult->shipmentResponses->parcelInformation;
+                        
                         foreach ($parcelInformations as $key => $parcelInformation) {
                             // TODO: check if the pdf is written!
                             self::createPDF($shipment, $key);

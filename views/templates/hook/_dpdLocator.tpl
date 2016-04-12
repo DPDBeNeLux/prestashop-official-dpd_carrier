@@ -120,7 +120,7 @@
     }
     
     var dpdLocator = new DPD.locator({
-      controller: '{/literal}{$controller_path}{literal}',
+      controller: '{/literal}{$controller_path|addslashes}{literal}',
       containerId: 'dpdLocatorContainer',
       fullscreen: false,
       daysOfTheWeek: [
