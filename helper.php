@@ -732,7 +732,10 @@ class DpdHelper
         if (count($range) > 0) {
             self::loadFPDx();
             
-            $size = 'A4';
+            $size = (string)(Configuration::get(DpdHelper::generateVariableName('label format')));
+            if (empty($size)) {
+                $size = 'A6';
+            }
             
             $pdf = new FPDI();
             

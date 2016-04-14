@@ -135,6 +135,11 @@ class AdminDpdConfigController extends ModuleAdminController
           $result['dpd-label-on-state'] = $auto_label;
         }
         
+        $label_format = Configuration::get(DpdHelper::generateVariableName('label format'));
+        if ($label_format) {
+          $result['dpd-label-format'] = $label_format;
+        }
+        
         $this->output['success'] = $result;
     }
     
@@ -322,10 +327,14 @@ class AdminDpdConfigController extends ModuleAdminController
             $this->id_shop
         );
         $this->output["success"]["dpd-label-on-state"] = $this->module->l('Labels (for DPD orders)') . ' ' . $status;
-
-        if (Tools::getIsset('dpd-label-on-state') && (int)Tools::getValue('dpd-label-on-state') > -1) {
-            
-        }
+        
+        Configuration::updateValue(
+            DpdHelper::generateVariableName('label format'),
+            (string)Tools::getValue('dpd-label-format'),
+            $this->id_shop_group,
+            $this->id_shop
+        );
+        $this->output["success"]["dpd-label-format"] = $this->module->l('Label format is set to') . ' ' . (string)Tools::getValue('dpd-label-format');
     }
     
     private function mailDisAccountRequest()

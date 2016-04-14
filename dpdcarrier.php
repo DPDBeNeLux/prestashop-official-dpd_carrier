@@ -242,9 +242,6 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionCarrierUpdate($params)
     {
-        var_dump($params);
-        die;
-        
         $dis_services = new DisServices();
         
         foreach ($dis_services->services as $service) {

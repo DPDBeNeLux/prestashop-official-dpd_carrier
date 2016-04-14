@@ -3,8 +3,6 @@ TODO:
 - loader for parcelshop locator
 - message 'no shops found matching your criteria'
 
-- add setting for label format.
-
 - set shipped status after shippinglist print
 
 - cast variables
