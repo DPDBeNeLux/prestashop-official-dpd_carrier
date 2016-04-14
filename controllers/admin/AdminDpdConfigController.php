@@ -63,11 +63,20 @@ class AdminDpdConfigController extends ModuleAdminController
         $this->mailTemplateUrl = _PS_MODULE_DIR_ . $this->module->name . "/mails/";
         
         $this->module->loadHelper();
+        
+        $this->id_shop_group = (int)$this->context->shop->getContextShopGroupID();
+        $this->id_shop = (int)$this->context->shop->getContextShopID();
     }
     
     public function displayAjax()
     {
-        if (Tools::getIsset('step')) {
+        if (Tools::getIsset('settings')) {
+            $this->getCurrentSettings();
+        }
+        elseif (Tools::getIsset('states')) {
+            $this->getOrderStates();
+        }
+        elseif (Tools::getIsset('step')) {
             switch(Tools::getValue('step')) {
                 case 0:
                     $this->mailAccountRequest();
@@ -82,6 +91,7 @@ class AdminDpdConfigController extends ModuleAdminController
                     $this->testLogin();
                     $this->saveUserCredentials();
                     $this->updateTTlink();
+                    $this->saveAdvancedConfiguration();
                     break;
                 default:
                     Tools::Redirect(__PS_BASE_URI__);
@@ -93,6 +103,51 @@ class AdminDpdConfigController extends ModuleAdminController
         }
         echo Tools::jsonEncode($this->output);
         die;
+    }
+    
+    private function getCurrentSettings()
+    {
+        $result = array();
+        
+        $delisid = Configuration::get(DpdHelper::generateVariableName('delisid'));
+        if ($delisid) {
+          $result['delisid'] = $delisid;
+        }
+        
+        $live_server = Configuration::get(DpdHelper::generateVariableName('live_server'));
+        if ($live_server) {
+          $result['dpd-live-account'] = $live_server;
+        }
+        
+        $container_id = Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'));
+        if ($container_id) {
+          $result['locator-container-id'] = $container_id;
+        }
+        
+        $return_label = Configuration::get(DpdHelper::generateVariableName('RET_LABEL_ID'));
+        if ($return_label) {
+          $result['dpd-return-label'] = $return_label;
+        }
+        
+        $auto_label = Configuration::get(DpdHelper::generateVariableName('label on status'));
+        if ($auto_label) {
+          $result['dpd-label-on-state'] = $auto_label;
+        }
+        
+        $this->output['success'] = $result;
+    }
+    
+    private function getOrderStates()
+    {
+        $id_lang = $this->context->language->id;
+        
+        $order_states = array();
+        
+        foreach (OrderState::getOrderStates($id_lang) as $key => $orderState) {
+            $order_states[$orderState['id_order_state']] = $orderState['name'];
+        }
+        
+        $this->output['success'] = $order_states;
     }
     
     private function testLogin()
@@ -161,26 +216,23 @@ class AdminDpdConfigController extends ModuleAdminController
         }
         
         if (count($this->output["validation"]) == 0) {
-            $id_shop_group = (int)$this->context->shop->getContextShopGroupID();
-            $id_shop = (int)$this->context->shop->getContextShopID();
-            
             Configuration::updateValue(
                 DpdHelper::generateVariableName('delisid'),
                 Tools::getValue('delisid'),
-                $id_shop_group,
-                $id_shop
+                $this->id_shop_group,
+                $this->id_shop
             );
             Configuration::updateValue(
                 DpdHelper::generateVariableName('password'),
                 Tools::getValue('password'),
-                $id_shop_group,
-                $id_shop
+                $this->id_shop_group,
+                $this->id_shop
             );
             Configuration::updateValue(
                 DpdHelper::generateVariableName('live_server'),
                 Tools::getIsset('dpd-live-account'),
-                $id_shop_group,
-                $id_shop
+                $this->id_shop_group,
+                $this->id_shop
             );
             
             $this->output["success"]["dis-login-save"] = $this->module->l("User credentials saved.");
@@ -196,17 +248,73 @@ class AdminDpdConfigController extends ModuleAdminController
         $shipping_services = new DisServices();
         foreach ($shipping_services->services as $service) {
             $carrier = new Carrier(Configuration::get(DpdHelper::generateVariableName($service->name . ' id')));
-            $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' .
-                $this->context->country->iso_code .
-                '&delisId=' . Tools::getValue('delisid') .
-                '&matchCode=@';
-            $carrier->save();
+            if(!empty($carrier->id)) {
+                $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' .
+                    $this->context->country->iso_code .
+                    '&delisId=' . Tools::getValue('delisid') .
+                    '&matchCode=@';
+                $carrier->save();
+            }
+        }
+    }
+    
+    private function saveAdvancedConfiguration()
+    {
+        $status;
+        if ((string)Tools::getValue('locator-container-id') == '') {
+            $status = $this->module->l('default');
+        } else {
+            $status = (string)Tools::getValue('locator-container-id');
+        }
+        
+        Configuration::updateValue(
+            DpdHelper::generateVariableName('LOC_CON_ID'),
+            (string)Tools::getValue('locator-container-id'),
+            $this->id_shop_group,
+            $this->id_shop
+        );
+        $this->output["success"]["locator-container-id"] = $this->module->l('Locator container ID set to') . ' ' . $status;
+
+        Configuration::updateValue(
+            DpdHelper::generateVariableName('RET_LABEL_ID'),
+            (bool)Tools::getIsset('dpd-return-label'),
+            $this->id_shop_group,
+            $this->id_shop
+        );
+        $status;
+        if ((bool)Tools::getIsset('dpd-return-label')) {
+            $status = $this->module->l('enabled');
+        } else {
+            $status = $this->module->l('disabled');
+        }
+        
+        $this->output["success"]["dpd-return-label"] = $this->module->l('Return label in RMA slip is') . ' ' . $status;
+        
+        
+        $status;
+        if ((int)Tools::getValue('dpd-label-on-state') == 0) {
+            $status = $this->module->l('won\'t be generated automatically');
+        } else {
+            $orderState = new OrderState((int)Tools::getValue('dpd-label-on-state'));
+            $status = $this->module->l('will be generated automatically on status') . ' ' . $orderState->name[$this->context->language->id];
+        }
+        
+        Configuration::updateValue(
+            DpdHelper::generateVariableName('label on status'),
+            (int)Tools::getValue('dpd-label-on-state'),
+            $this->id_shop_group,
+            $this->id_shop
+        );
+        $this->output["success"]["dpd-label-on-state"] = $this->module->l('Labels (for DPD orders)') . ' ' . $status;
+
+        if (Tools::getIsset('dpd-label-on-state') && (int)Tools::getValue('dpd-label-on-state') > -1) {
+            
         }
     }
     
     private function mailDisAccountRequest()
     {
-        if (!Tools::getIsset('delisid') || Tools::getValue('delisid') =='') {
+        if (!Tools::getIsset('delisid') || Tools::getValue('delisid') == '') {
             $this->output["validation"]["delisid"] = $this->module->l("Please enter your delisID.");
         }
         if (!Tools::getIsset('password') || Tools::getValue('password') =='') {

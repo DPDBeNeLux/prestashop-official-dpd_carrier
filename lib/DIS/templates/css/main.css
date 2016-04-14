@@ -262,7 +262,6 @@
     position: relative;
     display: inline-block;
     height: 40px;
-    width: 40px;
     float: left;
     overflow: hidden;
     background-color: #e6e7e7;
@@ -378,13 +377,23 @@
 }
 
 #dpd-config .onoffswitch-inner:before,
-#dpd-starting #dpd-account-step-three .onoffswitch-inner:before {
+#dpd-starting #dpd-account-step-three #dpd-live-account-container .onoffswitch-inner:before {
     content: "LIVE";
 }
 
 #dpd-config .onoffswitch-inner:after,
-#dpd-starting #dpd-account-step-three .onoffswitch-inner:after {
+#dpd-starting #dpd-account-step-three #dpd-live-account-container .onoffswitch-inner:after {
     content: "TEST";
+}
+
+#dpd-config .onoffswitch-inner:before,
+#dpd-starting #dpd-account-step-three #dpd-return-label-container .onoffswitch-inner:before {
+    content: "YES";
+}
+
+#dpd-config .onoffswitch-inner:after,
+#dpd-starting #dpd-account-step-three #dpd-return-label-container .onoffswitch-inner:after {
+    content: "NO";
 }
 
 

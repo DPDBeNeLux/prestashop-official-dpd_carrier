@@ -142,6 +142,14 @@ class DpdHelper
         
     }
     
+    public static function createDPDLabelLocation()
+    {
+        $download_location = self::getLabelLocation();
+        return file_exists($download_location)
+          || ( mkdir($this->download_location, '755')
+              && copy(_PS_DOWNLOAD_DIR_ . DS . '.htaccess', $this->download_location . DS . '.htaccess'));
+    }
+    
     public static function initCarriers()
     {
         self::loadDis();

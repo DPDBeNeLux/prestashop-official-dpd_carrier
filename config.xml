@@ -3,7 +3,7 @@
 	<name>dpdcarrier</name>
 	<displayName><![CDATA[DPD Carrier 2.0]]></displayName>
 	<version><![CDATA[0.2.0]]></version>
-	<description><![CDATA[Description Small]]></description>
+	<description><![CDATA[Integrate easily our DPD shipping offer in your webshop.]]></description>
 	<author><![CDATA[Michiel Van Gucht]]></author><author_uri><![CDATA[https://be.linkedin.com/in/mvgucht]]></author_uri>
 	<tab><![CDATA[shipping_logistics]]></tab>
 	<confirmUninstall><![CDATA[Are you sure you want to uninstall the DPD Carrier Module?]]></confirmUninstall>

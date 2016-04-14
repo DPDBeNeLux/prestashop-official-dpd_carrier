@@ -4,7 +4,7 @@
             <nav class="topheader">
                 <ul>
                     <li><a class="active" href="#">Configuration</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="mailto:prestashop@dpd.be?Subject=[Contact]" target="_top">Contact</a></li>
                 </ul>
             </nav>
             <a href="http://www.dpd.com/" class="dpdLogo">DPD.com</a>
@@ -25,124 +25,142 @@
                     <a onclick="dpdAdminConfig.scrollToId('dpd-status');">Status</a>
                 </li>
                 <li>
-                    <a href="#">Wiki</a>
+                    <a href="https://github.com/dpdgroup/prestashop-official-dpd_carrier/issues" target="_blank">Report a bug</a>
                 </li>
             </ul>
         </nav>
     </div>
     <div id="dpd-content">
         <div class="centered">
-            <div id="dpd-welcome">
-                <h1>Welcome!</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.</p>
-                <p>Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet. Mauris ipsum. Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque volutpat condimentum velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam nec ante.</p>
-                <p>Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis. Nulla facilisi. Ut fringilla. Suspendisse potenti. Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien. Proin quam. Etiam ultrices. Suspendisse in justo eu magna luctus suscipit. Sed lectus. Integer euismod lacus luctus magna. Quisque cursus, metus vitae pharetra auctor, sem massa mattis sem, at interdum magna augue eget diam.</p>
-                <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Morbi lacinia molestie dui. Praesent blandit dolor. Sed non quam. In vel mi sit amet augue congue elementum. Morbi in ipsum sit amet pede facilisis laoreet. Donec lacus nunc, viverra nec, blandit vel, egestas et, augue. Vestibulum tincidunt malesuada tellus. Ut ultrices ultrices enim. Curabitur sit amet mauris. Morbi in dui quis est pulvinar ullamcorper. Nulla facilisi. Integer lacinia sollicitudin massa. Cras metus. Sed aliquet risus a tortor.</p>
-                <p>Integer id quam. Morbi mi. Quisque nisl felis, venenatis tristique, dignissim in, ultrices sit amet, augue. Proin sodales libero eget ante. Nulla quam. Aenean laoreet. Vestibulum nisi lectus, commodo ac, facilisis ac, ultricies eu, pede. Ut orci risus, accumsan porttitor, cursus quis, aliquet eget, justo. Sed pretium blandit orci. Ut eu diam at pede suscipit sodales. Aenean lectus elit, fermentum non, convallis id, sagittis at, neque. Nullam mauris orci, aliquet et, iaculis et, viverra vitae, ligula.</p>
-            </div>
-            <div id="dpd-starting">
-                <h1>Let's get you up and running.</h1>
-                <p>Before you can use our extension you'll need:<br>
-                <span class="info">(check the boxes if you completed the step)</span></p>
-                <ol>
-                    <li><span class="number">1.</span>
-                        <p>A dpd account<br>
-                        Get in contact by filling in the from below and hitting send.<br>
-                        One of our sales guys/girls will get back to you as soon as possible.</p>
-                        <div class="onoffswitch">
-                            <input type="checkbox" name="dpd-account" class="onoffswitch-checkbox" id="dpd-account" onclick="dpdAdminConfig.dpdAccountToggleStep(event);">
-                            <label class="onoffswitch-label" for="dpd-account">
-                                <span class="onoffswitch-inner"></span>
-                                <span class="onoffswitch-switch"></span>
-                            </label>
-                        </div>
-                    </li>
-                    <li><span class="number">2.</span>
-                        <p>Your DIS web service account activated<br>
-                        Our exention uses the DIS (BeNeLux) web services to find parcel shops or create labels.<br>
-                        It is not activated by default.</p>
-                        <div class="onoffswitch">
-                            <input type="checkbox" name="dpd-dis-account" class="onoffswitch-checkbox" id="dpd-dis-account" onclick="dpdAdminConfig.dpdAccountToggleStep(event);">
-                            <label class="onoffswitch-label" for="dpd-dis-account">
-                                <span class="onoffswitch-inner"></span>
-                                <span class="onoffswitch-switch"></span>
-                            </label>
-                        </div>
-                     </li>
-                </ol>
-                <div id="dpd-info" class="dpd-notificiation" style="display: none"></div>
-                <div id="dpd-success" class="dpd-notificiation" style="display: none"></div>
-                <div id="dpd-warning" class="dpd-notificiation" style="display: none"></div>
-                <div id="dpd-error" class="dpd-notificiation" style="display: none"></div>
-                <div id="dpd-validation" class="dpd-notificiation" style="display: none"></div>
-                <div style="clear:both;" class="centered">
-                    <form id="dpd-account-form">
-                        <h1 id="dpd-account-form-title">Request form</h1>
-                        <div id="dpd-account-step-one">
-                            <input type="text" name="company" placeholder="Company" style="width:300px;"><br>
-                            <input type="text" name="ppm" placeholder="Parcels / Month" style="width:300px;"><br>
-                            <input type="text" name="contact" placeholder="Your name" style="width:300px;"><br>
-                            <input type="text" name="email" placeholder="Your email" style="width:300px;"><br>
-                            <input type="text" name="phone" placeholder="Your phone" style="width:300px;"><br>
-                            <input type="text" name="street" placeholder="Street" style="width:200px;"><input type="text" name="houseno" placeholder="No" style="width:100px;"><br>
-                            <div class="dpd-select">
-                                <!--<div class="arrow-down"></div>-->
-                                <select name="country" placeholder="Country">
-                                  <option value="BE">BE</option>
-                                  <option value="LU">LU</option>
-                                  <option value="NL">NL</option>
-                                </select>
-                            </div>
-                            <input type="text" name="postcode" placeholder="Postal Code" style="width:90px;"><input type="text" name="city" placeholder="City" style="width:170px;"><br>
-                        </div>
-                        <div id="dpd-account-step-two" style="display:none;">
-                            <input type="text" name="delisid" placeholder="DelisID" style="width:300px;"><br>
-                            <input type="password" name="password" placeholder="Password" style="width:300px;"><br>
-                        </div>
-                        <div id="dpd-account-step-three" style="display:none;">
-                            <div class="onoffswitch" style="clear:both;">
-                                <input type="checkbox" name="dpd-live-account" class="onoffswitch-checkbox" id="dpd-live-account">
-                                <label class="onoffswitch-label" for="dpd-live-account">
+            <div id="dpd-page-1">
+                <div id="dpd-welcome">
+                    <h1>Welcome!</h1>
+                    <p>DPD in Belgium is part of DPDgroup, the second-largest international parcel delivery network in Europe. Thanks to innovative technology and local knowledge, DPD offers the best possible experience for clients both sending and receiving parcels. DPD’s leading Predict service sets a new standard in parcel delivery. Clients receive detailed information about the one hour time window in which their parcel will be delivered.</p>
+                    <p>As part of DPDgroup, DPD Belgium has access to over 22,000 local Pickup parcelshops throughout Europe, of which 1,500 in the Benelux. DPD delivers to over 230 countries worldwide. DPDgroup employs over 50,000 people, all collaborating each day to deliver over 3.6 million parcels. DPDgroup is the parcel delivery network of the French La Poste group. For additional information: <a href="http://www.dpd.com" target="_blank">www.dpd.com</a>.</p>
+                    <p>Please feel free to use the checklist below to get you up and running as soon as possible, or switch over to the advanced settings.</p>
+                </div>
+                <div id="dpd-starting">
+                    <h1>Let's get you up and running.</h1>
+                    <p>Before you can use our extension you'll need:<br>
+                    <span class="info">(check the boxes if you completed the step)</span></p>
+                    <ol>
+                        <li><span class="number">1.</span>
+                            <p>A dpd account<br>
+                            Get in contact by filling in the from below and hitting send.<br>
+                            One of our sales guys/girls will get back to you as soon as possible.</p>
+                            <div class="onoffswitch">
+                                <input type="checkbox" name="dpd-account" class="onoffswitch-checkbox" id="dpd-account" onclick="dpdAdminConfig.dpdAccountToggleStep(event);">
+                                <label class="onoffswitch-label" for="dpd-account">
                                     <span class="onoffswitch-inner"></span>
                                     <span class="onoffswitch-switch"></span>
                                 </label>
                             </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div id="dpd-buttons" style="clear:both;">
-                <nav class="buttons centered">
-                    <ul>
-                        <li><a id="dpd-save" onclick="dpdAdminConfig.submitFormToController('dpd-account-form', dpdAdminConfigValues.configControllerUrl);" class="active">Send</a></li>
-                    </ul>
-                </nav>
-            </div>
-            <div id="dpd-status">
-                <h1>Some statistics</h1>
-                <div id="dpd-stats-container">
-                    <div class="dpd-status-sub-total-container">
-                        <div class="dpd-sub-total">
-                            <h1>Pickup</h1>
-                            <div class="dpd-pickup-logo dpd-sub-total-logo"></div>
-                            <div class="dpd-total-count" id="dpd-pickup-checkout">0</div>
-                            <div class="dpd-total-count" id="dpd-pickup-labels">0</div>
-                        </div>
-                        <div class="dpd-sub-total">
-                            <h1>Home</h1>
-                            <div class="dpd-home-logo dpd-sub-total-logo"></div>
-                            <div class="dpd-total-count" id="dpd-home-checkout">0</div>
-                            <div class="dpd-total-count" id="dpd-home-labels">0</div>
-                        </div>
-                        <div class="dpd-sub-total">
-                            <h1>Predict</h1>
-                            <div class="dpd-predict-logo dpd-sub-total-logo"></div>
-                            <div class="dpd-total-count" id="dpd-predict-checkout">0</div>
-                            <div class="dpd-total-count" id="dpd-predict-labels">0</div>
-                        </div>
+                        </li>
+                        <li><span class="number">2.</span>
+                            <p>Your DIS web service account activated<br>
+                            Our exention uses the DIS (BeNeLux) web services to find parcel shops or create labels.<br>
+                            It is not activated by default.</p>
+                            <div class="onoffswitch">
+                                <input type="checkbox" name="dpd-dis-account" class="onoffswitch-checkbox" id="dpd-dis-account" onclick="dpdAdminConfig.dpdAccountToggleStep(event);">
+                                <label class="onoffswitch-label" for="dpd-dis-account">
+                                    <span class="onoffswitch-inner"></span>
+                                    <span class="onoffswitch-switch"></span>
+                                </label>
+                            </div>
+                         </li>
+                    </ol>
+                    <div id="dpd-info" class="dpd-notificiation" style="display: none"></div>
+                    <div id="dpd-success" class="dpd-notificiation" style="display: none"></div>
+                    <div id="dpd-warning" class="dpd-notificiation" style="display: none"></div>
+                    <div id="dpd-error" class="dpd-notificiation" style="display: none"></div>
+                    <div id="dpd-validation" class="dpd-notificiation" style="display: none"></div>
+                    <div style="clear:both;" class="centered">
+                        <form id="dpd-account-form">
+                            <h1 id="dpd-account-form-title">Request form</h1>
+                            <div id="dpd-account-step-one">
+                                <input type="text" name="company" placeholder="Company" style="width:300px;"><br>
+                                <input type="text" name="ppm" placeholder="Parcels / Month" style="width:300px;"><br>
+                                <input type="text" name="contact" placeholder="Your name" style="width:300px;"><br>
+                                <input type="text" name="email" placeholder="Your email" style="width:300px;"><br>
+                                <input type="text" name="phone" placeholder="Your phone" style="width:300px;"><br>
+                                <input type="text" name="street" placeholder="Street" style="width:200px;"><input type="text" name="houseno" placeholder="No" style="width:100px;"><br>
+                                <div class="dpd-select">
+                                    <!--<div class="arrow-down"></div>-->
+                                    <select name="country" placeholder="Country" style="width: 45px;">
+                                      <option value="BE">BE</option>
+                                      <option value="LU">LU</option>
+                                      <option value="NL">NL</option>
+                                    </select>
+                                </div>
+                                <input type="text" name="postcode" placeholder="Postal" style="width:70px;"><input type="text" name="city" placeholder="City" style="width:185px;"><br>
+                            </div>
+                            <div id="dpd-account-step-two" style="display:none;">
+                                <input type="text" name="delisid" placeholder="DelisID" style="width:300px;"><br>
+                                <input type="password" name="password" placeholder="Password" style="width:300px;"><br>
+                            </div>
+                            <div id="dpd-account-step-three" style="display:none;">
+                                <div id="dpd-live-account-container" class="onoffswitch" style="clear:both;">
+                                    <input type="checkbox" name="dpd-live-account" class="onoffswitch-checkbox" id="dpd-live-account">
+                                    <label class="onoffswitch-label" for="dpd-live-account">
+                                        <span class="onoffswitch-inner"></span>
+                                        <span class="onoffswitch-switch"></span>
+                                    </label>
+                                </div>
+                                <h2>Front end</h2>
+                                <p>If you don't know what all of this means, please keep the default values until you do</p>
+                                <input type="text" name="locator-container-id" placeholder="Locator Container ID" style="width:300px;"><br>
+                                <p>Return label in RMA:</p>
+                                <div id="dpd-return-label-container" class="onoffswitch" style="clear:both;">
+                                    <input type="checkbox" name="dpd-return-label" class="onoffswitch-checkbox" id="dpd-return-label" checked="checked">
+                                    <label class="onoffswitch-label" for="dpd-return-label">
+                                        <span class="onoffswitch-inner"></span>
+                                        <span class="onoffswitch-switch"></span>
+                                    </label>
+                                </div>
+                                <h2>Back end</h2>
+                                <p>Label generation on status:</p>
+                                <div class="dpd-select">
+                                    <select name="dpd-label-on-state" id="dpd-select-state" placeholder="State" style="width:300px;">
+                                      <option value="0">Disabled</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="dpd-total-count" id="dpd-status-total-checkout">0</div>
-                    <div class="dpd-total-count" id="dpd-status-total-labels">0</div>
+                </div>
+                <div id="dpd-buttons" style="clear:both; padding-top: 10px;">
+                    <nav class="buttons centered">
+                        <ul>
+                            <li><a id="dpd-save" onclick="dpdAdminConfig.submitFormToController('dpd-account-form', dpdAdminConfigValues.configControllerUrl);" class="active">Send</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div id="dpd-status">
+                    <h1>Some statistics</h1>
+                    <div id="dpd-stats-container">
+                        <div class="dpd-status-sub-total-container">
+                            <div class="dpd-sub-total">
+                                <h1>Pickup</h1>
+                                <div class="dpd-pickup-logo dpd-sub-total-logo"></div>
+                                <div class="dpd-total-count" id="dpd-pickup-checkout">0</div>
+                                <div class="dpd-total-count" id="dpd-pickup-labels">0</div>
+                            </div>
+                            <div class="dpd-sub-total">
+                                <h1>Home</h1>
+                                <div class="dpd-home-logo dpd-sub-total-logo"></div>
+                                <div class="dpd-total-count" id="dpd-home-checkout">0</div>
+                                <div class="dpd-total-count" id="dpd-home-labels">0</div>
+                            </div>
+                            <div class="dpd-sub-total">
+                                <h1>Predict</h1>
+                                <div class="dpd-predict-logo dpd-sub-total-logo"></div>
+                                <div class="dpd-total-count" id="dpd-predict-checkout">0</div>
+                                <div class="dpd-total-count" id="dpd-predict-labels">0</div>
+                            </div>
+                        </div>
+                        <div class="dpd-total-count" id="dpd-status-total-checkout">0</div>
+                        <div class="dpd-total-count" id="dpd-status-total-labels">0</div>
+                    </div>
                 </div>
             </div>
         </div>

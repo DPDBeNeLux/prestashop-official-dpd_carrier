@@ -72,8 +72,41 @@ class DpdCarrier extends CarrierModule
         require_once($this->local_path . DS .'helper.php');
     }
     
+    private $warnings = array();
+    
     public function __construct()
     {
+        $fullDescription = $this->l('Integrate easily our DPD shipping offer in your webshop.') . '<br>' .
+            $this->l('This module supports the following shipping solutions:') . 
+            '<ul>' .
+                '<li>'. $this->l('DPD Classic') .'</li>' .
+                '<li>'. $this->l('DPD Predict') .'</li>' .
+                '<li>'. $this->l('DPD Pickup (delivery in a parcelshop chosen by your customer)') .'</li>' .
+                '<li>'. $this->l('DPD Express (10:00, 12:00)') .'</li>' .
+                '<li>'. $this->l('DPD Guarantee (18:00)') .'</li>' .
+                '<li>'. $this->l('Compatibility with the default COD module from prestashop') .'</li>' .
+            '</ul>' .
+            $this->l('as well as:') .
+            '<ul>' .
+                '<li>'. $this->l('Track & trace for you and your customer on Order level. (1 link, all the parcels)') .'</li>' .
+                '<li>'. $this->l('Add a return label to your RMA slip (and use the same T&T to follow it back)') .'</li>' .
+            '</ul>';
+        $additionalDescription = '<ul>' .
+                '<li>'. $this->l('Generate the labels directly in the order or automatically (bulk) on a certain status.') .'</li>' .
+                '<li>'. $this->l('Download them manually in the order or in bulk via the shipping list (1 PDF).') .'</li>' .
+                '<li>'. $this->l('Print them in A6 or A4 (with full page cover).') .'</li>' .
+            '</ul>' .
+            $this->l('The add-on is free of charge, still a contract with DPD should be signed in order to have access to the DPD solutions.') .
+            $this->l('You can use the in the configuration contact checklist and form to get everything going.');
+        
+        if (count($this->warnings) > 0) {
+            $this->warning = '<br><ul>';
+            foreach ($this->warnings as $warning) {
+                $this->warning .= '<li>'.$warning.'</li>';
+            }
+            $this->warning .= '</ul>';
+        }
+        
         $this->loadHelper();
         DpdHelper::loadDis();
         
@@ -82,15 +115,14 @@ class DpdCarrier extends CarrierModule
         $this->dependencies = array();
         $this->name = 'dpdcarrier';//DpdHelper::MODULENAME;
         $this->displayName = $this->l('DPD Carrier 2.0');
-        $this->description = $this->l('Description Small');
+        $this->description = $this->l('Integrate easily our DPD shipping offer in your webshop.');
         $this->author = 'Michiel Van Gucht';
         $this->author_uri = 'https://be.linkedin.com/in/mvgucht';
-        $this->description_full = $this->l('Description Full');
-        $this->additional_description = $this->l('Additional Description');
+        $this->description_full = $fullDescription;
+        $this->additional_description = $additionalDescription;
         // This loads the module every time the back-end is loaded so we can check some stuff.
         $this->need_instance = 1;
         $this->tab = 'shipping_logistics';
-        $this->warning; // Fill this variable with warnings for the shipper (that is why we need need_instance)
         $this->limited_countries = array('be', 'lu', 'nl'); // Just to be a douche :)
         // $this->controllers = array('DpdStats', 'DpdConfig');  // This doesn't work.
         
@@ -102,11 +134,9 @@ class DpdCarrier extends CarrierModule
         
         // This will check the module when it is called due to need_instance.
         if (self::isInstalled($this->name)) {
-            //$this->checkConfiguraion();
+            
         }
         
-        //This is a value required by prestashop to show that the module is healthy.
-        //Configuration::updateValue('MYMODULE_CONFIGURATION_OK', true);
     }
     
     /**
@@ -118,53 +148,71 @@ class DpdCarrier extends CarrierModule
             Shop::setContext(Shop::CONTEXT_ALL);
         }
           
-        if (!parent::install()
-          || !DpdHelper::initCarriers()
-          || !DpdHelper::installTab()
-          || !DpdHelper::installDB()) {
+        if (!parent::install()) {
+            $this->warnings[] = $this->l('Could not run parent installer');
+            return false;
+        }
+        
+        if (!DpdHelper::installDB()) {
+            $this->warnings[] = $this->l('Could not add the needed database tables');
+            return false;
+        }
+        
+        if (!DpdHelper::initCarriers()) {
+            $this->warnings[] = $this->l('Could not initialize the carriers');
+            return false;
+        }
+        if (!DpdHelper::installTab()) {
+            $this->warnings[] = $this->l('Could not add the shipping list tab');
             return false;
         }
         
         foreach ($this->hooks as $hook_name) {
             if (!$this->registerHook($hook_name)) {
+                $this->warnings[] = $this->l('Could not register hook') . ' ' . $hook_name;
                 return false;
             }
         }
         
         if (count(DpdHelper::installControllers($this->neededControllers)) > 0) {
-            //ADD ERROR STUFF HERE
+            $this->warnings[] = $this->l('Could not register all controllers');
             return false;
         }
         
-        // TODO: CREATE DOWNLOAD LOCATION.
+        if (!DpdHelper::createDPDLabelLocation()) {
+            $this->warnings[] = $this->l('Could not create the download/dpd location on your filesystem');
+            return false;
+        }
         
         return true;
     }
     
     public function uninstall()
     {
-        
-        if (!parent::uninstall()) {
-            $this->warning[] = "Could not run parent uninstaller successfully.";
-        }
-        
         if (!DpdHelper::removeCarriers()) {
-            $this->warning[] = "Could not remove carriers";
+            $this->warnings[] = $this->l('Could not remove carriers');
         }
         
-        if (!DpdHelper::installTab()) {
-            $this->warning[] = "Could not remove tab";
+        if (!DpdHelper::uninstallTab()) {
+            $this->warnings[] = $this->l('Could not remove tab');
         }
 
         foreach ($this->hooks as $hook_name) {
             if (!$this->unregisterHook($hook_name)) {
-                $this->warning[] = "Could not unhook hook " . $hook_name;
+                $this->warnings[] = $this->l('Could not unhook hook') . ' ' . $hook_name;
             }
         }
         
         if (count(DpdHelper::uninstallControllers($this->neededControllers)) > 0) {
-            // ADD ERROR STUFF HERE
+            $this->warnings[] = $this->l('Could not unregister all controllers');
         }
+        
+        if (!parent::uninstall()) {
+            $this->warnings[] = $this->l('Could not run parent uninstaller successfully.');
+        }
+        
+        $this->warnings[] = $this->l('The uninstaller doesn\'t automatically remove the label location on your file system');
+        $this->warnings[] = $this->l('The uninstaller doesn\'t automatically remove the database tabels');
         
         return true;
     }
@@ -189,11 +237,14 @@ class DpdCarrier extends CarrierModule
             )
         );
 
-        return $this->display(__FILE__, '_dpdAdminConfigValues.tpl') . $content;
+        return $this->display($this->_path, '_dpdAdminConfigValues.tpl') . $content;
     }
     
     public function hookActionCarrierUpdate($params)
     {
+        var_dump($params);
+        die;
+        
         $dis_services = new DisServices();
         
         foreach ($dis_services->services as $service) {
@@ -219,11 +270,12 @@ class DpdCarrier extends CarrierModule
         $this->context->smarty->assign(
             array(
                 'controller_path' => $controller_path
-                ,'carrier_id' => Configuration::get('DPDCARRIER_PICKUP_ID')
+                ,'carrier_id' => Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'))
+                ,'container_id' => Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'))
             )
         );
         
-        return $this->display(__FILE__, '_dpdLocator.tpl');
+        return $this->display($this->_path, '_dpdLocator.tpl');
     }
     
     public function hookActionCarrierProcess($params)
@@ -247,14 +299,14 @@ class DpdCarrier extends CarrierModule
                 )
             );
             
-            return $this->display(dirname(__FILE__), '_frontOrderConfirmation.tpl');
+            return $this->display($this->_path, '_frontOrderConfirmation.tpl');
         }
     }
     
     public function hookDisplayAdminOrderTabOrder($params)
     {
         if (DpdHelper::isDpdOrder($params['order'])) {
-            return $this->display(__FILE__, '_adminOrderTab.tpl');
+            return $this->display($this->_path, '_adminOrderTab.tpl');
         }
     }
     
@@ -273,7 +325,7 @@ class DpdCarrier extends CarrierModule
                 )
             );
             
-            return $this->display(dirname(__FILE__), '_adminOrderTabLabels16.tpl');
+            return $this->display($this->_path, '_adminOrderTabLabels16.tpl');
         }
     }
     
@@ -291,23 +343,23 @@ class DpdCarrier extends CarrierModule
     
     public function hookDisplayPDFOrderReturn($params)
     {
-        $result = DpdHelper::generateReturnLabel($params['object']);
-        
-        if ($result) {
-            $label_image = DpdHelper::getLabelLocation() . DS . $result[0]['parcel_number'] .'.jpg';
-        } else {
-            $label_image = false;
-        }
-        
-        $this->context->smarty->assign(
-            array(
-                'label_path' => $label_image
-            )
-        );
+        if ((bool)Configuration::get(DpdHelper::generateVariableName('RET_LABEL_ID'))) {
+            $result = DpdHelper::generateReturnLabel($params['object']);
             
-            return $this->display(dirname(__FILE__), '_frontPDFOrderReturn.tpl');
-        
-        
+            if ($result) {
+                $label_image = DpdHelper::getLabelLocation() . DS . $result[0]['parcel_number'] .'.jpg';
+            } else {
+                $label_image = false;
+            }
+            
+            $this->context->smarty->assign(
+                array(
+                    'label_path' => $label_image
+                )
+            );
+                
+            return $this->display($this->_path, '_frontPDFOrderReturn.tpl');
+        }
     }
     
     /**

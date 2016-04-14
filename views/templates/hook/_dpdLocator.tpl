@@ -106,7 +106,7 @@
         $(this).mousedown( function(){
           alert("{/literal}{l s='Don\'t forget to select a ParcelShop' mod='dpdcarrier'}{literal}");
           $('html, body').animate({
-            scrollTop: $("#dpdLocatorContainer").offset().top
+            scrollTop: $('#{/literal}{if $container_id}{$container_id}{else}dpdLocatorContainer{/if}{literal}').offset().top
           }, 2000);
           return false;
         });
@@ -121,7 +121,7 @@
     
     var dpdLocator = new DPD.locator({
       controller: '{/literal}{$controller_path|addslashes}{literal}',
-      containerId: 'dpdLocatorContainer',
+      containerId: '{/literal}{if $container_id}{$container_id}{else}dpdLocatorContainer{/if}{literal}',
       fullscreen: false,
       daysOfTheWeek: [
         {/literal}
