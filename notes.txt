@@ -1,1 +1,12 @@
-//new google.maps.Marker({literal}{map: delivery_map, title: 'test', position: new google.maps.LatLng({/literal}{$shop_info['lat']},{$shop_info['lng']}{literal})});{/literal}
+TODO:
+
+- loader for parcelshop locator
+- message 'no shops found matching your criteria'
+
+- add setting for label format.
+
+- set shipped status after shippinglist print
+
+- cast variables
+
+- make 1.5 compatible

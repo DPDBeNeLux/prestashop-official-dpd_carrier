@@ -89,6 +89,7 @@ class AdminDpdConfigController extends ModuleAdminController
                     // TODO: Create testSenderAddress !!!
                     $this->testCache();
                     $this->testLogin();
+                    $this->testSenderAddress();
                     $this->saveUserCredentials();
                     $this->updateTTlink();
                     $this->saveAdvancedConfiguration();
@@ -203,6 +204,21 @@ class AdminDpdConfigController extends ModuleAdminController
                 "It looks like no cache is enabled on your system. " .
                 "Please note that you'll need cache enabled when you start using the live services."
             );
+        }
+    }
+    
+    private function testSenderAddress()
+    {
+        $address = DpdHelper::getSenderAddress();
+        
+        if (empty($address->iso_A2) 
+            || empty($address->postcode) 
+            || empty($address->city)) {
+            $link = new Link();
+            $this->output["warning"]["dis-login"] = $this->module->l(
+                'Seems like you haven\'t defined a shop contact address.') . '<br>' .
+                $this->module->l('Please configure one before you try to generate a label. (it will fail)') . '<br>' .
+                '<a href="' . $link->getAdminLink('AdminStores') . '">' . $this->module->l('Store Contacts') . '</a>';
         }
     }
     

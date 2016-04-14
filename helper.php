@@ -317,7 +317,7 @@ class DpdHelper
         $result->company = Configuration::get('PS_SHOP_NAME');
         $result->address1 = Configuration::get('PS_SHOP_ADDR1');
         $result->iso_A2 = Country::getIsoById(Configuration::get('PS_SHOP_COUNTRY_ID'));
-        $result->postcode = Configuration::get('PS_SHOP_CODE');
+        $result->postcode = str_replace(' ', '', Configuration::get('PS_SHOP_CODE'));
         $result->city = Configuration::get('PS_SHOP_CITY');
         
         return $result;
