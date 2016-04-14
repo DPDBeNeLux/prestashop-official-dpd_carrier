@@ -69,7 +69,7 @@ class DpdCarrier extends CarrierModule
     
     public function loadHelper()
     {
-        require_once($this->local_path . DS .'helper.php');
+        require_once(dirname(__FILE__) . DS .'helper.php');
     }
     
     private $warnings = array();
@@ -225,7 +225,7 @@ class DpdCarrier extends CarrierModule
         $this->context->controller->addCSS($this->_path.'lib/DIS/templates/css/main.css');
         $this->context->controller->addJS($this->_path.'lib/DIS/js/dpdAdminConfig.js');
         
-        $dpdTemplate = dirname(__FILE__) . '/lib/DIS/templates/dpdAdminConfig.html';
+        $dpdTemplate = dirname(__FILE__) . DS.'lib'.DS.'DIS'.DS.'templates'.DS.'dpdAdminConfig.html';
         $handle = fopen($dpdTemplate, 'r');
         $content = fread($handle, filesize($dpdTemplate));
         fclose($handle);
