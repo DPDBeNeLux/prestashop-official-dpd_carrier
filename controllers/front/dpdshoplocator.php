@@ -66,6 +66,23 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         $this->disLogin = DpdHelper::getLogin();
     }
     
+    public function display()
+    {
+        $controller_path = $this->context->link->getModuleLink(
+            'dpdcarrier',
+            'dpdshoplocator',
+            array('ajax' => 'true')
+        );
+        
+        $this->context->smarty->assign(array(
+            'controller_path' => $controller_path,
+            'gmapsKey' => "AIzaSyAE_349qqoMOecarUr_IV6Gapq8lwZYaKY"
+        ));
+        
+        echo $this->context->smarty->fetch($this->getTemplatePath('shop_locator.tpl'));
+        die;
+    }
+    
     public function displayAjax()
     {
         if (Tools::getIsset('action')) {
@@ -229,7 +246,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                 ': <strong>' . $shop->company . '</strong>' .
                 '<br>' . $this->module->l('Located at') . ': ' . $shop->street . ' ' . $shop->houseNo .
                 ', ' . $shop->zipCode  . ' ' . $shop->city . '</p>' .
-                '<a href="#" onclick="javascript:dpdLocator.showLocator();return false;">' .
+                '<a href="#" onclick="javascript:showLocator();return false;">' .
                 $this->module->l('Click here to alter your choice') . '</a>';
         } else {
             $this->output['error']['unknown-shopid'] = $this->module->l(

@@ -45,111 +45,20 @@
 *                     Ndhyyhd N
 *                        NN
 *}
-<style>
-  .dpd-locator-controls {
-    margin-top: 10px;
-    border: 1px solid transparent;
-    border-radius: 2px 0 0 2px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    height: 32px;
-    outline: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  }
-
-  #dpd-locator-input {
-    background-color: #fff;
-    font-family: Roboto;
-    font-size: 15px;
-    font-weight: 300;
-    margin-left: 12px;
-    padding: 0 11px 0 13px;
-    text-overflow: ellipsis;
-    width: 300px;
-  }
-  
-  #dpd-locator-time,
-  #dpd-locator-day {
-    width: 80px;
-  }
-
-  #dpd-locator-input:focus {
-    border-color: #4d90fe;
-  }
-
-  .pac-container {
-    font-family: Roboto;
-  }
-
-  #type-selector {
-    color: #fff;
-    background-color: #4d90fe;
-    padding: 5px 11px 0px 11px;
-  }
-
-  #type-selector label {
-    font-family: Roboto;
-    font-size: 13px;
-    font-weight: 300;
-  }
-  #target {
-    width: 345px;
-  }
-</style>
 <!-- Carrier DpdCarrier  -->
-<div id="dpdLocatorContainer"></div>
-
+<div id="dpdLocatorContainer">
+    <iframe id="dpdIframe" src="module/dpdcarrier/dpdshoplocator" style="width:100%; height:0px;"> </iframe>
+</div>
 <script>
 {literal}
-    function disableOpcPayment(){
-      $("#opc_payment_methods a").each(function(e) {
-        $(this).mousedown( function(){
-          alert("{/literal}{l s='Don\'t forget to select a ParcelShop' mod='dpdcarrier'}{literal}");
-          $('html, body').animate({
-            scrollTop: $('#{/literal}{if $container_id}{$container_id}{else}dpdLocatorContainer{/if}{literal}').offset().top
-          }, 2000);
-          return false;
-        });
-      });
+    function AdjustIframeHeight(i) { document.getElementById("dpdIframe").style.height = parseInt(i) + "px"; }
+    
+    function showLocator() {
+        AdjustIframeHeight(600);
     }
     
-    function enableOpcPayment(){
-        $("#opc_payment_methods a").each(function(e) {
-          $(this).unbind('mousedown');
-        });
-    }
-    
-    var dpdLocator = new DPD.locator({
-      controller: '{/literal}{$controller_path|addslashes}{literal}',
-      containerId: '{/literal}{if $container_id}{$container_id}{else}dpdLocatorContainer{/if}{literal}',
-      fullscreen: false,
-      daysOfTheWeek: [
-        {/literal}
-        '{l s='All Week' mod='dpdcarrier'}',
-        '{l s='Mo' mod='dpdcarrier'}',
-        '{l s='Tu' mod='dpdcarrier'}',
-        '{l s='We' mod='dpdcarrier'}',
-        '{l s='Th' mod='dpdcarrier'}',
-        '{l s='Fr' mod='dpdcarrier'}',
-        '{l s='Sa' mod='dpdcarrier'}',
-        '{l s='Su' mod='dpdcarrier'}'
-        {literal}],
-      timeOfDay: ['{/literal}{l s='All Day' mod='dpdcarrier'}{literal}'],
-      callBack: chosenShop
-    });
-    
-    if(typeof google == 'undefined' || typeof google.maps == 'undefined') {
-        var fileref = document.createElement('script');
-        fileref.setAttribute("type","text/javascript");
-        fileref.setAttribute("src", 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAE_349qqoMOecarUr_IV6Gapq8lwZYaKY&libraries=places&callback=dpdLocator.initialize');
-        document.getElementsByTagName("head")[0].appendChild(fileref);
-    } else {
-        dpdLocator.initialize();
-    }
-    
-    function chosenShop(shopID) {
-        dpdLocator.hideLocator();
-        enableOpcPayment();
+    function hideLocator() {
+        AdjustIframeHeight(0);
     }
     
     $('#carrier_area').ready(function(){
@@ -158,20 +67,19 @@
             if(this.value == '{/literal}{$carrier_id|escape:'htmlall':'UTF-8'}{literal},'){
                 // If the parcelshop option is selected on load
                 if(this.checked){
-                    dpdLocator.showLocator();
-                    disableOpcPayment();
+                    showLocator();
                 }
                 this.onchange = function(){
                     if (this.checked) {
-                        disableOpcPayment();
-                        dpdLocator.showLocator();
+                        showLocator();
                     }
                     return false;
                 }
             } else {
                 this.onchange = function(){
-                    enableOpcPayment();
-                    dpdLocator.hideLocator();
+                    if (this.checked) {
+                        hideLocator();
+                    }
                     return false
                 }
             }

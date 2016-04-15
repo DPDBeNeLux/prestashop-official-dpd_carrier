@@ -255,19 +255,9 @@ class DpdCarrier extends CarrierModule
     
     public function hookDisplayBeforeCarrier()
     {
-        $this->context->controller->addCSS($this->_path.'lib/DIS/templates/css/locator.css');
-        $this->context->controller->addJS($this->_path.'lib/DIS/js/dpdParcelshopLocator.js');
-        
-        $controller_path = $this->context->link->getModuleLink(
-            'dpdcarrier',
-            'dpdshoplocator',
-            array('ajax' => 'true')
-        );
-        
         $this->context->smarty->assign(
             array(
-                'controller_path' => $controller_path
-                ,'carrier_id' => Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'))
+                'carrier_id' => Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'))
                 ,'container_id' => Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'))
             )
         );
