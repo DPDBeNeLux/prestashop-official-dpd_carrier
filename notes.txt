@@ -1,6 +1,6 @@
 TODO:
 
-- loader for parcelshop locator
+- style loader for parcelshop locator
 
 - message 'no shops found matching your criteria'
 
