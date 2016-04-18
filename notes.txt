@@ -1,6 +1,7 @@
 TODO:
 
 - loader for parcelshop locator
+
 - message 'no shops found matching your criteria'
 
 - set shipped status after shippinglist print
@@ -9,18 +10,8 @@ TODO:
 
 - make 1.5 compatible
 
-- dynamically load places when not loaded
-<script src="https://maps.googleapis.com/maps-api-v3/api/js/24/8/intl/en_gb/places_impl.js" charset="UTF-8" type="text/javascript"></script>
-
 - Remove personal Google maps api key :) and reset it on google.
 
 - make a DPD namespace in the beforeCarrierHook template
 
 - rewrite the enable and disable opc payment for onepage checkout.
-
-- rethink and rewrite the container_id option in hookDiscplayBeforeCarrier with the new ifram solution.
-
-Requirements
-
-- script onload only works IE8+ (only important for multiple carrier/maps implementations)
-

@@ -65,6 +65,7 @@ class DpdCarrier extends CarrierModule
         ,'displayAdminOrderContentOrder'
         ,'actionOrderStatusUpdate'
         ,'displayPDFOrderReturn'
+        ,'displayFooter'
     );
     
     public function loadHelper()
@@ -258,7 +259,6 @@ class DpdCarrier extends CarrierModule
         $this->context->smarty->assign(
             array(
                 'carrier_id' => Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'))
-                ,'container_id' => Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'))
             )
         );
         
@@ -349,6 +349,19 @@ class DpdCarrier extends CarrierModule
         }
     }
     
+    public function hookDisplayFooter($params)
+    {
+        // TODO: add custom controller name in config.
+        if(is_a($this->context->controller, 'OrderController') || is_a($this->context->controller, 'OrderOpcController')) {
+            $this->context->smarty->assign(
+                array(
+                    'container_id' => Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'))
+                )
+            );
+            
+            return $this->display($this->_path, '_dpdLocatorFooter.tpl');
+        }
+    }
     /**
      * Mandatory functions for a CarrierModule.
      */

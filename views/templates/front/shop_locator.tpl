@@ -33,12 +33,12 @@
       
       function showLocator() {
           dpdLocator.showLocator();
-          parent.AdjustIframeHeight(document.getElementById("dpdLocatorContainer").scrollHeight);
+          parent.DpdAdjustIframeHeight(document.getElementById("dpdLocatorContainer").scrollHeight);
       }
       
       function chosenShop(data) {
           dpdLocator.hideLocator();
-          parent.AdjustIframeHeight(document.getElementById("dpdLocatorContainer").scrollHeight);
+          parent.DpdAdjustIframeHeight(document.getElementById("dpdLocatorContainer").scrollHeight);
       }
       {/literal}
     </script>

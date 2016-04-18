@@ -48,30 +48,24 @@
 <!-- Carrier DpdCarrier  -->
 <script>
 {literal}
-    $(document).ready(function(){
-        $('[id^="delivery_option_"]').each(function(index) {
-            // if it is parcelshop option
-            if(this.value == '{/literal}{$carrier_id|escape:'htmlall':'UTF-8'}{literal},'){
-                // If the parcelshop option is selected on load
-                if(this.checked){
-                    DpdShowLocator();
-                }
-                this.onchange = function(){
-                    if (this.checked) {
-                        DpdShowLocator();
-                    }
-                    return false;
-                }
-            } else {
-                this.onchange = function(){
-                    if (this.checked) {
-                        DpdHideLocator();
-                    }
-                    return false
-                }
-            }
-        });
-    });
+    function DpdAdjustIframeHeight(i) {
+        if(document.getElementById("dpdIframe") == null) {
+            DpdInitIframe();
+        }
+        document.getElementById("dpdIframe").style.height = parseInt(i) + "px"; 
+    }
+    
+    function DpdShowLocator() {
+        DpdAdjustIframeHeight(600);
+    }
+    
+    function DpdHideLocator() {
+        DpdAdjustIframeHeight(0);
+    }
+    
+    function DpdInitIframe(){
+        $('#{/literal}{if $container_id}{$container_id}{else}HOOK_BEFORECARRIER{/if}{literal}').prepend('<iframe id="dpdIframe" src="module/dpdcarrier/dpdshoplocator" style="width:100%; height:0px;"> </iframe>')
+    }
 {/literal}
 </script>
 <!-- End Carrier DpdCarrier  -->
