@@ -19,6 +19,8 @@
             '{l s='Sa' mod='dpdcarrier'}',
             '{l s='Su' mod='dpdcarrier'}'{literal}
           ],
+          loadingMessage: {/literal}'{l s='Loading dpd Pickup points' mod='dpdcarrier'}'{literal},
+          notFoundMessage: {/literal}'{l s='No Pickup points found' mod='dpdcarrier'}'{literal},
           timeOfDay: ['{/literal}{l s='All Day' mod='dpdcarrier'}{literal}'],
           callBack: chosenShop
         });
@@ -47,6 +49,10 @@
       body {
         margin: 0;
         padding: 0;
+      }
+      #dpdLocatorContainer {
+        top: 0;
+        left: 0;
       }
     </style>
   </head>

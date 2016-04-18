@@ -192,3 +192,20 @@
 #target {
   width: 345px;
 }
+#DPDLoader {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  z-index: 1000;
+  top: 50%
+}
+#DPDLoader div {
+  display: inline-block;
+}
+.dpd-loading {
+  display: inline-block;
+  background: url('../img/loadingAnimation.gif') no-repeat;
+  width: 208px;
+  height: 24px;
+  display: inline-block;
+}
