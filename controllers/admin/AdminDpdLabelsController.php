@@ -72,6 +72,7 @@ class AdminDpdLabelsController extends ModuleAdminController
         if (is_array($this->boxes) && !empty($this->boxes)) {
             $data = DpdHelper::getLabelInfo($this->boxes);
             DpdHelper::loadShippingListTemplate();
+            DpdHelper::setLabelShipped($this->boxes);
             
             $pdf = new PDF(array($data), 'DpdShippingList', Context::getContext()->smarty, 'L');
             $pdf->render();

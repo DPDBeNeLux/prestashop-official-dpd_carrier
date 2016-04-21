@@ -136,4 +136,14 @@ class HTMLTemplateDpdShippingList extends HTMLTemplate
     {
         return DpdHelper::getPDFTemplate($template_name);
     }
+    
+    /**
+     * Returns the template's HTML pagination block
+     *
+     * @return string HTML pagination block
+     */
+    public function getPagination()
+    {
+        return $this->smarty->fetch($this->getTemplate('pagination'));
+    }
 }
