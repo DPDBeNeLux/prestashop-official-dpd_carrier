@@ -60,7 +60,7 @@ class DisShipment
     }
     
     $this->request['order']['generalShipmentData']['sender']['zipCode'] = str_replace(' ', '', $this->request['order']['generalShipmentData']['sender']['zipCode']);
-    $this->request['order']['generalShipmentData']['recipient']['zipCode'] = str_replace(' ', '', $this->request['order']['generalShipmentData']['sender']['zipCode']);
+    $this->request['order']['generalShipmentData']['recipient']['zipCode'] = str_replace(' ', '', $this->request['order']['generalShipmentData']['recipient']['zipCode']);
     
     $counter = 0;
     $stop = false;
