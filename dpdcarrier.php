@@ -271,6 +271,18 @@ class DpdCarrier extends CarrierModule
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             if (!DpdHelper::getParcelShopInfo($params['cart'])) {
                 $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop before proceeding.');
+                return false;
+            }
+        }
+    }
+    
+    public function hookDisplayPayment()
+    {
+        $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
+        if ((int)($params['cart']->id_carrier) == $currentPickupId) {
+            if (!DpdHelper::getParcelShopInfo($params['cart'])) {
+                $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop before proceeding.');
+                return false;
             }
         }
     }
