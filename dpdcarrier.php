@@ -58,6 +58,7 @@ class DpdCarrier extends CarrierModule
         'actionCarrierUpdate' // Triggered when carrier is edited in back-end
         ,'displayBeforeCarrier' // Used to display the map before the carrier selection
         ,'actionCarrierProcess'
+        ,'displayPaymentTop'
         ,'displayPayment'
         ,'displayBeforePayment'
         ,'displayOrderConfirmation'
@@ -267,6 +268,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionCarrierProcess($params)
     {
+        // Only do this when normal 5 step checkout.
         $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             if (!DpdHelper::getParcelShopInfo($params['cart'])) {
@@ -276,13 +278,19 @@ class DpdCarrier extends CarrierModule
         }
     }
     
-    public function hookDisplayPayment()
+    public function hookDisplayPaymentTop($params)
     {
         $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             if (!DpdHelper::getParcelShopInfo($params['cart'])) {
-                $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop before proceeding.');
-                return false;
+                $cart = new Cart($params['cart']->id);
+                $this->context->smarty->assign(
+                    array(
+                        'shop_info' => DpdHelper::getParcelShopInfo($cart)
+                    )
+                );
+                return $this->display($this->_path, '_frontOpcShopConfirmation.tpl');
+                    //. $this->display($this->_path, '_frontOrderConfirmation.tpl');
             }
         }
     }
