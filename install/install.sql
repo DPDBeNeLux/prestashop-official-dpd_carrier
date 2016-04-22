@@ -35,6 +35,6 @@ CREATE TABLE IF NOT EXISTS `_PREFIX_dpdcarrier_return` (
   `id_order_return` int(10) NOT NULL,
   `parcel_number` varchar(14) NOT NULL,
   `date` datetime NOT NULL,
-  PRIMARY KEY (`id_dpdcarrier_label`),
+  PRIMARY KEY (`id_dpdcarrier_return`),
   UNIQUE KEY `ORDER_PARCEL` (`id_order_return`,`parcel_number`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
