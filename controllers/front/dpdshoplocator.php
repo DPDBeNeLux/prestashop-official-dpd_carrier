@@ -155,8 +155,8 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                     $select_link = $this->module->l('Please use a delivery address.');
                     $active = false;
                 } else {
-                    if($counter == 0) {
-                        $this->_saveShop($shop);
+                    if ($counter == 0) {
+                        $this->saveShop($shop);
                     }
                 }
                 
@@ -203,7 +203,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         }
     }
     
-    private function _saveShop($shop)
+    private function saveShop($shop)
     {
         $id_cart = $this->context->cart->id;
         $id_carrier = $this->context->cart->id_carrier;

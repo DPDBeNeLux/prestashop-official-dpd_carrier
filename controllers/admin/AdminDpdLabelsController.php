@@ -152,8 +152,7 @@ class AdminDpdLabelsController extends ModuleAdminController
         $start = 0,
         $limit = null,
         $id_lang_shop = false
-    )
-    {
+    ) {
         parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
         
         if ($this->_list) {
