@@ -108,6 +108,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
     private function findShops()
     {
         $searchData = array();
+        $deliveryAddress = new Address($this->context->cart->id_address_delivery);
         
         if (Tools::getIsset('lng') && Tools::getIsset('lat')) {
             $searchData = array(
@@ -119,7 +120,6 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                 'Query' => Tools::getValue('query')
             );
         } else {
-            $deliveryAddress = new Address($this->context->cart->id_address_delivery);
             $searchData = array(
                 'Street' => $deliveryAddress->address1
                 ,'HouseNo' => ''
@@ -144,9 +144,25 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         if ($result) {
             $this->output['success']['dpd-locator'] = count($result->shops) . ' ' . $this->module->l('shops found');
             $this->output['data']['center'] = $result->center;
+            $counter = 0;
             foreach ($result->shops as $shopID => $shop) {
+                $logo = '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop.png';
+                $select_link = $this->module->l('Select this parcelshop.');
+                $active = true;
+                if(Country::getIsoById($deliveryAddress->id_country) != $shop->isoAlpha2) {
+                    $shopID = -1;
+                    $logo = '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop_na.png';
+                    $select_link = $this->module->l('To select this parcelshop please use a delivery address in the same country.');
+                    $active = false;
+                } else {
+                    if($counter == 0) {
+                        $this->_saveShop($shop);
+                    }
+                }
+                
                 $this->output['data']['shops'][] = array(
                     'id' => $shopID
+                    ,'active' => $active
                     ,'lng' => $shop->longitude
                     ,'lat' => $shop->latitude
                     ,'name' => $shop->company
@@ -155,7 +171,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                         $shop->zipCode . ' ' .
                         $shop->city
                     ,'logo' => array(
-                        'url' => '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop.png'
+                        'url' => $logo
                         ,'size' => array(
                             'width' => 110
                             ,'height' => 120
@@ -173,10 +189,11 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                             ,'y' => 0
                         )
                     )
+                    ,'infoLink' => $this->module->l('Show more information')
+                    ,'selectLink' => $select_link
                 );
+                $counter++;
             }
-            $this->output['data']['info-link'] = $this->module->l('Show more information');
-            $this->output['data']['select-link'] = $this->module->l('Select this parcelshop');
             
             $cookie = new Cookie('dpdshops');
             $cookie->last_search = serialize($searchData);
@@ -184,6 +201,33 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         } else {
             $this->output['warning']['dpd-locator'] = $this->module->l('No shops found');
         }
+    }
+    
+    private function _saveShop($shop)
+    {
+        $id_cart = $this->context->cart->id;
+        $id_carrier = $this->context->cart->id_carrier;
+        $id_location = $shop->parcelShopId;
+        $dbInstance = Db::getInstance();
+        
+        $dbInstance->insert(
+            'dpdcarrier_pickup',
+            array(
+                'id_cart' => $dbInstance->escape($id_cart)
+                ,'id_carrier' => $dbInstance->escape($id_carrier)
+                ,'id_location' => $dbInstance->escape($id_location)
+                ,'lat' => $dbInstance->escape($shop->latitude)
+                ,'lng' => $dbInstance->escape($shop->longitude)
+                ,'name' => $dbInstance->escape($shop->company)
+                ,'address' => $dbInstance->escape($shop->street . ' ' .$shop->houseNo)
+                ,'city' => $dbInstance->escape($shop->city)
+                ,'postcode' => $dbInstance->escape($shop->zipCode)
+                ,'iso_code' => $dbInstance->escape($shop->isoAlpha2)
+            ),
+            false,
+            true,
+            Db::ON_DUPLICATE_KEY
+        );
     }
     
     private function getShopInfo()
@@ -217,30 +261,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         $shop = $this->getProposedShop();
         
         if ($shop) {
-            $id_cart = $this->context->cart->id;
-            $id_carrier = $this->context->cart->id_carrier;
-            $id_location = $shop->parcelShopId;
-            
-            $dbInstance = Db::getInstance();
-            
-            $dbInstance->insert(
-                'dpdcarrier_pickup',
-                array(
-                    'id_cart' => $dbInstance->escape($id_cart)
-                    ,'id_carrier' => $dbInstance->escape($id_carrier)
-                    ,'id_location' => $dbInstance->escape($id_location)
-                    ,'lat' => $dbInstance->escape($shop->latitude)
-                    ,'lng' => $dbInstance->escape($shop->longitude)
-                    ,'name' => $dbInstance->escape($shop->company)
-                    ,'address' => $dbInstance->escape($shop->street . ' ' .$shop->houseNo)
-                    ,'city' => $dbInstance->escape($shop->city)
-                    ,'postcode' => $dbInstance->escape($shop->zipCode)
-                    ,'iso_code' => $dbInstance->escape($shop->isoAlpha2)
-                ),
-                false,
-                true,
-                Db::ON_DUPLICATE_KEY
-            );
+            $this->_saveShop($shop);
             
             $this->output['data'] = '<p>' . $this->module->l('You have chosen') .
                 ': <strong>' . $shop->company . '</strong>' .
