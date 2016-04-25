@@ -20,3 +20,5 @@ TODO:
 - Make debug level configuratble.
 
 - check static key for locator request.
+
+- get installer and uninstaller warnings to work.

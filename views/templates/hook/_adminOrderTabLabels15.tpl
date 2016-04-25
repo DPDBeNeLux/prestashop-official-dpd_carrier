@@ -426,7 +426,7 @@
 	<legend>
       <img src="../img/admin/delivery.gif" />DPD <span class="dpd loading" id="dpd_label_count_loading"></span><span class="badge" id="dpd_label_count">0</span>
   </legend>
-	<form action="{$controllerUrl}" method="post" class="form-horizontal well hidden-print">
+	<form action="{html_entity_decode($controllerUrl|escape:'htmlall':'UTF-8')}" method="post" class="form-horizontal well hidden-print">
         <div class="table-responsive">
             <table class="table" id="labels_table">
                 <thead>
@@ -479,7 +479,7 @@
             <div class="form-group pull-left col-lg-5">
                 <label class="control-label col-lg-4">{l s='Count' mod='dpdcarrier'}</label>
                 <input type="text" name="label_count" class="form-control fixed-width-sm" value="1" onchange="DPD.updateLabelCount(event);"/>
-                <input type="hidden" name="id_order" value="{$order->id}" />
+                <input type="hidden" name="id_order" value="{$order->id|escape:'htmlall':'UTF-8'}" />
             </div>
             <button type="submit" name="action" class="btn btn-primary pull-right" value="generate">
                 {l s='Generate Label(s)' mod='dpdcarrier'}
@@ -498,7 +498,7 @@
                     <tr>
                         <td>
                             <label class="control-label col-lg-3">{l s='Weight' mod='dpdcarrier'}</label>
-                            <input type="text" name="label_weight" class="form-control fixed-width-sm" value="{$order_weight}"/>
+                            <input type="text" name="label_weight" class="form-control fixed-width-sm" value="{$order_weight|escape:'htmlall':'UTF-8'}"/>
                             <label class="control-label col-lg-3">{l s='Length' mod='dpdcarrier'}</label>
                             <input type="text" name="label_length" class="form-control fixed-width-sm" value="0" />
                             <label class="control-label col-lg-3">{l s='Height' mod='dpdcarrier'}</label>
@@ -506,9 +506,9 @@
                             <label class="control-label col-lg-3">{l s='Depth' mod='dpdcarrier'}</label>
                             <input type="text" name="label_depth" class="form-control fixed-width-sm" value="0" />
                             <label class="control-label col-lg-3">{l s='Value' mod='dpdcarrier'}</label>
-                            <input type="text" id="dpd_label_value" name="label_value" class="form-control fixed-width-sm" value="{$order->total_paid}" />
+                            <input type="text" id="dpd_label_value" name="label_value" class="form-control fixed-width-sm" value="{$order->total_paid|escape:'htmlall':'UTF-8'}" />
                             <label class="control-label col-lg-3">{l s='Shop ID' mod='dpdcarrier'}</label>
-                            <input type="text" id="dpd_label_ps_id" name="label_ps_id" class="form-control fixed-width-sm" value="{if isset($shop_info['id_location'])}{$shop_info['id_location']}{/if}"/>
+                            <input type="text" id="dpd_label_ps_id" name="label_ps_id" class="form-control fixed-width-sm" value="{if isset($shop_info['id_location'])}{$shop_info['id_location']|escape:'htmlall':'UTF-8'}{/if}"/>
                         </td>
                         <td>
                             <label class="control-label col-lg-3 nowrap">{l s='COD' mod='dpdcarrier'}</label>

@@ -80,7 +80,7 @@ class DpdCarrier extends CarrierModule
     public function __construct()
     {
         $fullDescription = $this->l('Integrate easily our DPD shipping offer in your webshop.') . '<br>' .
-            $this->l('This module supports the following shipping solutions:') . 
+            $this->l('This module supports the following shipping solutions:') .
             '<ul>' .
                 '<li>'. $this->l('DPD Classic') .'</li>' .
                 '<li>'. $this->l('DPD Predict') .'</li>' .
@@ -91,12 +91,20 @@ class DpdCarrier extends CarrierModule
             '</ul>' .
             $this->l('as well as:') .
             '<ul>' .
-                '<li>'. $this->l('Track & trace for you and your customer on Order level. (1 link, all the parcels)') .'</li>' .
-                '<li>'. $this->l('Add a return label to your RMA slip (and use the same T&T to follow it back)') .'</li>' .
+                '<li>'.
+                $this->l('Track & trace for you and your customer on Order level. (1 link, all the parcels)') .
+                '</li>' .
+                '<li>'.
+                $this->l('Add a return label to your RMA slip (and use the same T&T to follow it back)') .
+                '</li>' .
             '</ul>';
         $additionalDescription = '<ul>' .
-                '<li>'. $this->l('Generate the labels directly in the order or automatically (bulk) on a certain status.') .'</li>' .
-                '<li>'. $this->l('Download them manually in the order or in bulk via the shipping list (1 PDF).') .'</li>' .
+                '<li>'.
+                $this->l('Generate the labels directly in the order or automatically (bulk) on a certain status.') .
+                '</li>' .
+                '<li>'.
+                $this->l('Download them manually in the order or in bulk via the shipping list (1 PDF).') .
+                '</li>' .
                 '<li>'. $this->l('Print them in A6 or A4 (with full page cover).') .'</li>' .
             '</ul>' .
             $this->l('The add-on is free of charge, still a contract with DPD should be signed in order to have access to the DPD solutions.') .
@@ -273,7 +281,7 @@ class DpdCarrier extends CarrierModule
         $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             if (!DpdHelper::getParcelShopInfo($params['cart'])) {
-                $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop before proceeding.');
+                $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop.');
                 return false;
             }
         }
@@ -389,7 +397,8 @@ class DpdCarrier extends CarrierModule
     public function hookDisplayFooter($params)
     {
         // TODO: add custom controller name in config.
-        if(is_a($this->context->controller, 'OrderController') || is_a($this->context->controller, 'OrderOpcController')) {
+        if (is_a($this->context->controller, 'OrderController') 
+            || is_a($this->context->controller, 'OrderOpcController')) {
             $this->context->smarty->assign(
                 array(
                     'container_id' => Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'))

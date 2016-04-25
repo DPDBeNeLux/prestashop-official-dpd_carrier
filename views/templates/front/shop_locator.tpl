@@ -53,7 +53,7 @@
       var dpdLocator;
       function init() {
         dpdLocator = new DPD.locator({
-          controller: '{/literal}{$controller_path}{literal}',
+          controller: '{/literal}{html_entity_decode($controller_path|escape:'htmlall':'UTF-8')}{literal}',
           containerId: 'dpdLocatorContainer',
           fullscreen: false,
           daysOfTheWeek: [{/literal}
@@ -76,7 +76,7 @@
         
         var fileref = document.createElement('script');
         fileref.setAttribute("type","text/javascript");
-        fileref.setAttribute("src", 'https://maps.googleapis.com/maps/api/js?key={/literal}{$gmapsKey}{literal}&libraries=places&callback=dpdLocator.initialize');
+        fileref.setAttribute("src", 'https://maps.googleapis.com/maps/api/js?key={/literal}{$gmapsKey|escape:'url':'UTF-8'}{literal}&libraries=places&callback=dpdLocator.initialize');
         document.getElementsByTagName("head")[0].appendChild(fileref);
       }
       

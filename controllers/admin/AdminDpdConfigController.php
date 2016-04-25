@@ -72,11 +72,9 @@ class AdminDpdConfigController extends ModuleAdminController
     {
         if (Tools::getIsset('settings')) {
             $this->getCurrentSettings();
-        }
-        elseif (Tools::getIsset('states')) {
+        } elseif (Tools::getIsset('states')) {
             $this->getOrderStates();
-        }
-        elseif (Tools::getIsset('step')) {
+        } elseif (Tools::getIsset('step')) {
             switch(Tools::getValue('step')) {
                 case 0:
                     $this->mailAccountRequest();
@@ -112,32 +110,32 @@ class AdminDpdConfigController extends ModuleAdminController
         
         $delisid = Configuration::get(DpdHelper::generateVariableName('delisid'));
         if ($delisid) {
-          $result['delisid'] = $delisid;
+            $result['delisid'] = $delisid;
         }
         
         $live_server = Configuration::get(DpdHelper::generateVariableName('live_server'));
         if ($live_server) {
-          $result['dpd-live-account'] = $live_server;
+            $result['dpd-live-account'] = $live_server;
         }
         
         $container_id = Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'));
         if ($container_id) {
-          $result['locator-container-id'] = $container_id;
+            $result['locator-container-id'] = $container_id;
         }
         
         $return_label = Configuration::get(DpdHelper::generateVariableName('RET_LABEL_ID'));
         if ($return_label) {
-          $result['dpd-return-label'] = $return_label;
+            $result['dpd-return-label'] = $return_label;
         }
         
         $auto_label = Configuration::get(DpdHelper::generateVariableName('label on status'));
         if ($auto_label) {
-          $result['dpd-label-on-state'] = $auto_label;
+            $result['dpd-label-on-state'] = $auto_label;
         }
         
         $label_format = Configuration::get(DpdHelper::generateVariableName('label format'));
         if ($label_format) {
-          $result['dpd-label-format'] = $label_format;
+            $result['dpd-label-format'] = $label_format;
         }
         
         $this->output['success'] = $result;
@@ -149,7 +147,7 @@ class AdminDpdConfigController extends ModuleAdminController
         
         $order_states = array();
         
-        foreach (OrderState::getOrderStates($id_lang) as $key => $orderState) {
+        foreach (OrderState::getOrderStates($id_lang) as $orderState) {
             $order_states[$orderState['id_order_state']] = $orderState['name'];
         }
         
@@ -216,13 +214,12 @@ class AdminDpdConfigController extends ModuleAdminController
     {
         $address = DpdHelper::getSenderAddress();
         
-        if (empty($address->iso_A2) 
-            || empty($address->postcode) 
+        if (empty($address->iso_A2)
+            || empty($address->postcode)
             || empty($address->city)) {
             $link = new Link();
-            $this->output["warning"]["dis-login"] = $this->module->l(
-                'Seems like you haven\'t defined a shop contact address.') . '<br>' .
-                $this->module->l('Please configure one before you try to generate a label. (it will fail)') . '<br>' .
+            $this->output["warning"]["dis-login"] = $this->module->l('Seems like you haven\'t defined a shop contact address.') .
+                '<br>' . $this->module->l('Please configure one before you try to generate a label. (it will fail)') . '<br>' .
                 '<a href="' . $link->getAdminLink('AdminStores') . '">' . $this->module->l('Store Contacts') . '</a>';
         }
     }
@@ -269,8 +266,9 @@ class AdminDpdConfigController extends ModuleAdminController
         $shipping_services = new DisServices();
         foreach ($shipping_services->services as $service) {
             $carrier = new Carrier(Configuration::get(DpdHelper::generateVariableName($service->name . ' id')));
-            if(!empty($carrier->id)) {
-                $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code . '_' .
+            if (!empty($carrier->id)) {
+                $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code
+                    . '_' .
                     $this->context->country->iso_code .
                     '&delisId=' . Tools::getValue('delisid') .
                     '&matchCode=@';
@@ -281,10 +279,8 @@ class AdminDpdConfigController extends ModuleAdminController
     
     private function saveAdvancedConfiguration()
     {
-        $status;
-        if ((string)Tools::getValue('locator-container-id') == '') {
-            $status = $this->module->l('default');
-        } else {
+        $status = $this->module->l('default');
+        if ((string)Tools::getValue('locator-container-id') 8= '') {
             $status = (string)Tools::getValue('locator-container-id');
         }
         
@@ -317,7 +313,8 @@ class AdminDpdConfigController extends ModuleAdminController
             $status = $this->module->l('won\'t be generated automatically');
         } else {
             $orderState = new OrderState((int)Tools::getValue('dpd-label-on-state'));
-            $status = $this->module->l('will be generated automatically on status') . ' ' . $orderState->name[$this->context->language->id];
+            $status = $this->module->l('will be generated automatically on status') .
+                ' ' . $orderState->name[$this->context->language->id];
         }
         
         Configuration::updateValue(
@@ -334,7 +331,8 @@ class AdminDpdConfigController extends ModuleAdminController
             $this->id_shop_group,
             $this->id_shop
         );
-        $this->output["success"]["dpd-label-format"] = $this->module->l('Label format is set to') . ' ' . (string)Tools::getValue('dpd-label-format');
+        $this->output["success"]["dpd-label-format"] = $this->module->l('Label format is set to') .
+            ' ' . (string)Tools::getValue('dpd-label-format');
     }
     
     private function mailDisAccountRequest()

@@ -67,7 +67,7 @@
     }
     
     function DpdInitIframe(){
-        $('#{/literal}{if $container_id}{$container_id}{else}HOOK_BEFORECARRIER{/if}{literal}').prepend('<iframe id="dpdIframe" src="module/dpdcarrier/dpdshoplocator" style="width:100%; height:0px;"> </iframe>')
+        $('#{/literal}{if $container_id}{$container_id|escape:'htmlall':'UTF-8'}{else}HOOK_BEFORECARRIER{/if}{literal}').prepend('<iframe id="dpdIframe" src="module/dpdcarrier/dpdshoplocator" style="width:100%; height:0px;"> </iframe>')
     }
 {/literal}
 </script>

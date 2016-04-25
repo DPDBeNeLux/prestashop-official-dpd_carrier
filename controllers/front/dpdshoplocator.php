@@ -48,7 +48,7 @@
  */
 
 class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontController
-{ 
+{
     public function init()
     {
         parent::init();
@@ -95,7 +95,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                     $this->getShopInfo();
                     break;
                 case 'save':
-                    $this->saveShop();
+                    $this->actionSaveShop();
                     break;
                 default:
                     Tools::Redirect(__PS_BASE_URI__);
@@ -149,10 +149,10 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                 $logo = '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop.png';
                 $select_link = $this->module->l('Select this parcelshop.');
                 $active = true;
-                if(Country::getIsoById($deliveryAddress->id_country) != $shop->isoAlpha2) {
+                if (Country::getIsoById($deliveryAddress->id_country) != $shop->isoAlpha2) {
                     $shopID = -1;
                     $logo = '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop_na.png';
-                    $select_link = $this->module->l('To select this parcelshop please use a delivery address in the same country.');
+                    $select_link = $this->module->l('Please use a delivery address.');
                     $active = false;
                 } else {
                     if($counter == 0) {
@@ -256,12 +256,12 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         }
     }
     
-    private function saveShop()
+    private function actionSaveShop()
     {
         $shop = $this->getProposedShop();
         
         if ($shop) {
-            $this->_saveShop($shop);
+            $this->saveShop($shop);
             
             $this->output['data'] = '<p>' . $this->module->l('You have chosen') .
                 ': <strong>' . $shop->company . '</strong>' .

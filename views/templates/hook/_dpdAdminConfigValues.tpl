@@ -47,8 +47,8 @@
 *}
 <script>
     var dpdAdminConfigValues = {
-        configControllerUrl: "{$configControllerUrl|addslashes}",
-        statsControllerUrl: "{$statsControllerUrl|addslashes}",
+        configControllerUrl: "{html_entity_decode($configControllerUrl|escape:'htmlall':'UTF-8')}",
+        statsControllerUrl: "{html_entity_decode($statsControllerUrl|escape:'htmlall':'UTF-8')}",
         scrollContainer: document.documentElement,
         scrollOffset: -150
     }

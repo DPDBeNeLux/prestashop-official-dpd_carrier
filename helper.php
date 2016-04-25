@@ -788,20 +788,20 @@ class DpdHelper
     
     public static function setLabelShipped($range)
     {
-      $list = '(';
-      foreach ($range as $key => $label_number) {
-          if ($key != 0) {
-              $list .= ',';
-          }
-          $list .= '\'' . $label_number . '\'';
-      }
-      $list .= ')';
-        
-      return Db::getInstance()->update(
-        'dpdcarrier_label',
-        array('shipped' => true),
-        'parcel_number IN ' . $list
-      );
+        $list = '(';
+        foreach ($range as $key => $label_number) {
+            if ($key != 0) {
+                $list .= ',';
+            }
+            $list .= '\'' . $label_number . '\'';
+        }
+        $list .= ')';
+          
+        return Db::getInstance()->update(
+            'dpdcarrier_label',
+            array('shipped' => true),
+            'parcel_number IN ' . $list
+        );
     }
     
     public static function getLabelInfo($range)
