@@ -91,26 +91,26 @@ class DisLogin
    */
   public function __construct($delisId, $password, $url = 'https://public-dis.dpd.nl/Services/')
   {
-  $cachedLogin = DisCache::get("DisLogin");
-  if( $cachedLogin
-    && $cachedLogin->checkUrl($url)
-    && $cachedLogin->checkCredentials($delisId, $password))
-  {
-    DisLogger::log("Using cached login", DisLogger::DEBUG);
-    $this->delisId = $cachedLogin->delisId;
-    $this->password = $cachedLogin->password;
-    $this->url = $cachedLogin->url;
-    $this->uid = $cachedLogin->uid;
-    $this->token = $cachedLogin->token;
-    $this->depot = $cachedLogin->depot;
-  } else {
-    $this->delisId = $delisId;
-    $this->password = $password;
-    $this->url = $url;
-    
-    // When the object is created it will always trigger a refresh because otherwise there wouldn't be a authToken available.
-    $this->refresh();
-  }
+    $cachedLogin = DisCache::get("DisLogin");
+    if( $cachedLogin
+      && $cachedLogin->checkUrl($url)
+      && $cachedLogin->checkCredentials($delisId, $password))
+    {
+      DisLogger::log("Using cached login", DisLogger::DEBUG);
+      $this->delisId = $cachedLogin->delisId;
+      $this->password = $cachedLogin->password;
+      $this->url = $cachedLogin->url;
+      $this->uid = $cachedLogin->uid;
+      $this->token = $cachedLogin->token;
+      $this->depot = $cachedLogin->depot;
+    } else {
+      $this->delisId = $delisId;
+      $this->password = $password;
+      $this->url = $url;
+      
+      // When the object is created it will always trigger a refresh because otherwise there wouldn't be a authToken available.
+      $this->refresh();
+    }
   }
   
   /**

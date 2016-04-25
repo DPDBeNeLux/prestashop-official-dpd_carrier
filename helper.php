@@ -205,7 +205,7 @@ class DpdHelper
                     Db::getInstance()->insert('carrier_group', array(
                         'id_carrier' => (int) $carrier->id,
                         'id_group' => (int) $group['id_group']
-                    ), false, true, Db::ON_DUPLICATE_KEY);
+                    ));
                 }
                 
                 $weight_ranges = (isset($service->weight_ranges) ? $service->weight_ranges : $default->weight_ranges);
@@ -229,10 +229,7 @@ class DpdHelper
                         'carrier_zone',
                         array(
                             'id_carrier' => (int)$carrier->id,
-                            'id_zone' => (int)$zone->id),
-                        false,
-                        true,
-                        Db::ON_DUPLICATE_KEY
+                            'id_zone' => (int)$zone->id)
                     );
 
                     foreach ($ranges as $range) {
@@ -245,9 +242,7 @@ class DpdHelper
                                 'id_zone' => (int)$zone->id,
                                 'price' => '0'
                             ),
-                            true,
-                            true,
-                            Db::ON_DUPLICATE_KEY
+                            true
                         );
                     }
                 }
@@ -911,6 +906,8 @@ class DpdHelper
     public static function getLogin()
     {
         self::loadDis();
+        
+        // Configuration::loadConfiguration();
         
         $delisId = Configuration::get(DpdHelper::generateVariableName('delisid'));
         $delisPw = Configuration::get(DpdHelper::generateVariableName('password'));

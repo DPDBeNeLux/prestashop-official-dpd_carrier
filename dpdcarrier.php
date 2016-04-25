@@ -287,7 +287,7 @@ class DpdCarrier extends CarrierModule
                     'shop_info' => DpdHelper::getParcelShopInfo($params['cart'])
                 )
             );
-            return $this->display($this->_path, '_frontOpcShopConfirmation.tpl');
+            return $this->display(__FILE__, '_frontOpcShopConfirmation.tpl');
         }
     }
     
@@ -302,7 +302,7 @@ class DpdCarrier extends CarrierModule
                 )
             );
             
-            return $this->display($this->_path, '_frontOrderConfirmation.tpl');
+            return $this->display(__FILE__, '_frontOrderConfirmation.tpl');
         }
     }
     

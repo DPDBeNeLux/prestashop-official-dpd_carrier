@@ -48,15 +48,7 @@
  */
 
 class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontController
-{
-    private $output = array(
-        'success' => array()
-        ,'info' => array()
-        ,'warning' => array()
-        ,'error' => array()
-        ,'validation' => array()
-    );
-    
+{ 
     public function init()
     {
         parent::init();
@@ -79,12 +71,22 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             'gmapsKey' => "AIzaSyAE_349qqoMOecarUr_IV6Gapq8lwZYaKY"
         ));
         
-        echo $this->context->smarty->fetch($this->getTemplatePath('shop_locator.tpl'));
+        $this->setTemplate('shop_locator.tpl');
+        $this->display_header = false;
+        $this->display_footer = false;
+        parent::display();
         die;
     }
     
     public function displayAjax()
     {
+        $this->output = array(
+            'success' => array()
+            ,'info' => array()
+            ,'warning' => array()
+            ,'error' => array()
+            ,'validation' => array()
+        );
         if (Tools::getIsset('action')) {
             switch(Tools::getValue('action')) {
                 case 'find':
@@ -137,10 +139,9 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         }
         
         DpdHelper::loadDis();
-        
         $shopFinder = new DisParcelShopFinder($this->disLogin);
         $result = $shopFinder->search($searchData);
-        
+
         if ($result) {
             $this->output['success']['dpd-locator'] = count($result->shops) . ' ' . $this->module->l('shops found');
             $this->output['data']['center'] = $result->center;
@@ -226,7 +227,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             ),
             false,
             true,
-            Db::ON_DUPLICATE_KEY
+            DB::REPLACE
         );
     }
     

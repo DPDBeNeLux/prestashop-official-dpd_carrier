@@ -52,8 +52,10 @@
         if(document.getElementById("dpdIframe") == null) {
             DpdInitIframe();
         }
-        document.getElementById("dpdIframe").style.height = parseInt(i) + "px"; 
-        updatePaymentMethodsDisplay();
+        document.getElementById("dpdIframe").style.height = parseInt(i) + "px";
+        if (typeof updatePaymentMethodsDisplay == 'function') {
+            updatePaymentMethodsDisplay(); 
+        }
     }
     
     function DpdShowLocator() {

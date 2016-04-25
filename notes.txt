@@ -7,7 +7,13 @@ TODO:
 - cast variables
 
 - make 1.5 compatible
+  - fix configuration layout.
+  - fix checkout layout. (iframe)
+  - handle PS1.5 display hooks.
+  
 
 - Remove personal Google maps api key :) and reset it on google.
 
 - make a DPD namespace in the beforeCarrierHook template
+
+- Make debug level configuratble.
