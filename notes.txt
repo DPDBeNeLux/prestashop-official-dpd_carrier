@@ -1,7 +1,5 @@
 TODO:
 
-- put the 'shop not found' error in a separate container (locator)
-
 - disable edit for shipping list.
 
 - add shipping list option if not more then 1 label in list.
@@ -13,5 +11,3 @@ TODO:
 - Remove personal Google maps api key :) and reset it on google.
 
 - make a DPD namespace in the beforeCarrierHook template
-
-- rewrite the enable and disable opc payment for onepage checkout.

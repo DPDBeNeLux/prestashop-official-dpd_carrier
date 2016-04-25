@@ -932,7 +932,7 @@ class DpdHelper
         $query = new DbQuery();
         $query->select('*')->from('dpdcarrier_pickup')->where('id_cart = ' . $cart->id);
         
-        return Db::getInstance()->getRow($query);
+        return Db::getInstance()->getRow($query, false);
     }
     
     public static function isDpdOrder($order)

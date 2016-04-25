@@ -282,23 +282,19 @@ class DpdCarrier extends CarrierModule
     {
         $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
-            if (!DpdHelper::getParcelShopInfo($params['cart'])) {
-                $cart = new Cart($params['cart']->id);
-                $this->context->smarty->assign(
-                    array(
-                        'shop_info' => DpdHelper::getParcelShopInfo($cart)
-                    )
-                );
-                return $this->display($this->_path, '_frontOpcShopConfirmation.tpl');
-                    //. $this->display($this->_path, '_frontOrderConfirmation.tpl');
-            }
+            $this->context->smarty->assign(
+                array(
+                    'shop_info' => DpdHelper::getParcelShopInfo($params['cart'])
+                )
+            );
+            return $this->display($this->_path, '_frontOpcShopConfirmation.tpl');
         }
     }
     
     public function hookDisplayOrderConfirmation($params)
     {
         $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
-        if ((int)($params['cart']->id_carrier) == $currentPickupId) {
+        if ((int)($params['objOrder']->id_carrier) == $currentPickupId) {
             $cart = new Cart($params['objOrder']->id_cart);
             $this->context->smarty->assign(
                 array(

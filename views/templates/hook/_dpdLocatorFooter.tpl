@@ -53,6 +53,7 @@
             DpdInitIframe();
         }
         document.getElementById("dpdIframe").style.height = parseInt(i) + "px"; 
+        updatePaymentMethodsDisplay();
     }
     
     function DpdShowLocator() {
