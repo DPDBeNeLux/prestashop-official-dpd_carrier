@@ -21,9 +21,14 @@
 #labels_table {
     width: 100%;
 }
-label {
-    width: 100px;
+.dpd label {
+    clear: both;
+    width: 8em;
+    float: left;
+    margin-right: 10px;
 }
-input[type='checkbox'] {
-    padding: 3px;
+#dpd_additional_options input {
+    width: 8em;
+    float: left;
+    display: inline-block;
 }
