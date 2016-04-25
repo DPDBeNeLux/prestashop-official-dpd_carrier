@@ -74,7 +74,7 @@ class HTMLTemplateDpdShippingList extends HTMLTemplate
     
     public function assignHookData($object)
     {
-        $template = Tools::ucfirst(str_replace('HTMLTemplate', '', get_class($this)));
+        //$template = Tools::ucfirst(str_replace('HTMLTemplate', '', get_class($this)));
         //$hook_name = 'displayPDF'.$template;
 
         $this->smarty->assign(array(

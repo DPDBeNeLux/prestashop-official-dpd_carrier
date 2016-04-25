@@ -10,6 +10,8 @@ TODO:
   - fix configuration layout.
   - fix checkout layout. (iframe)
   - fix order layout
+  
+  ----> i dont like layout stuff :(
 
 - add imagick check in configuration
 
@@ -22,3 +24,5 @@ TODO:
 - check static key for locator request.
 
 - get installer and uninstaller warnings to work.
+
+- rewrite the (full)description to use a template instead of hard coding it :)
