@@ -9,7 +9,7 @@ TODO:
 - make 1.5 compatible
   - fix configuration layout.
   - fix checkout layout. (iframe)
-  - handle PS1.5 display hooks.
+  - fix order layout
 
 - add imagick check in configuration
 

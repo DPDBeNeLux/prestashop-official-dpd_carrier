@@ -62,6 +62,7 @@ class DpdCarrier extends CarrierModule
         ,'displayPayment'
         ,'displayBeforePayment'
         ,'displayOrderConfirmation'
+        ,'displayAdminOrder'
         ,'displayAdminOrderTabOrder'
         ,'displayAdminOrderContentOrder'
         ,'actionOrderStatusUpdate'
@@ -306,10 +307,30 @@ class DpdCarrier extends CarrierModule
         }
     }
     
+    public function hookDisplayAdminOrder($params)
+    {
+        $order = new Order($params['id_order']);
+        if (DpdHelper::isDpdOrder($order)) {
+            $order_carrier = new OrderCarrier($order->getIdOrderCarrier());
+            $cart = new Cart($order->id_cart);
+            $this->context->smarty->assign(
+                array(
+                    'controllerUrl' => $this->context->link->getAdminLink('AdminDpdLabels') . "&ajax=true"
+                    ,'order_weight' => $order_carrier->weight
+                    ,'order' => $order
+                    ,'shop_info' => DpdHelper::getParcelShopInfo($cart)
+                    ,'init_settings' => DpdHelper::getInitialOrderSettings($order)
+                )
+            );
+            
+            return $this->display(__FILE__, '_adminOrderTabLabels15.tpl');
+        }
+    }
+    
     public function hookDisplayAdminOrderTabOrder($params)
     {
         if (DpdHelper::isDpdOrder($params['order'])) {
-            return $this->display($this->_path, '_adminOrderTab.tpl');
+            return $this->display(__FILE__, '_adminOrderTab.tpl');
         }
     }
     
@@ -328,7 +349,7 @@ class DpdCarrier extends CarrierModule
                 )
             );
             
-            return $this->display($this->_path, '_adminOrderTabLabels16.tpl');
+            return $this->display(__FILE__, '_adminOrderTabLabels16.tpl');
         }
     }
     
@@ -361,7 +382,7 @@ class DpdCarrier extends CarrierModule
                 )
             );
                 
-            return $this->display($this->_path, '_frontPDFOrderReturn.tpl');
+            return $this->display(__FILE__, '_frontPDFOrderReturn.tpl');
         }
     }
     
