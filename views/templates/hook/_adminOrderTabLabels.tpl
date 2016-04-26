@@ -104,12 +104,12 @@
     </form>
     <form action="javascript:DPD.generateLabels();" method="post" id="dpd_generate_label_form" class="form-horizontal well hidden-print">
         <div class="row">
-            <div class="form-group pull-left col-lg-5">
-                <label class="control-label col-lg-4">{l s='Count' mod='dpdcarrier'}</label>
+            <div class="form-group pull-left" id="generate_count">
+                <label class="control-label">{l s='Count' mod='dpdcarrier'}</label>
                 <input type="text" name="label_count" class="form-control fixed-width-sm" value="1" onchange="DPD.updateLabelCount(event);"/>
                 <input type="hidden" name="id_order" value="{$order->id|escape:'htmlall':'UTF-8'}" />
             </div>
-            <button type="submit" name="action" class="btn btn-primary pull-right" value="generate">
+            <button id="generate_label" type="submit" name="action" class="btn btn-primary pull-right" value="generate">
                 {l s='Generate Label(s)' mod='dpdcarrier'}
             </button>
         </div>

@@ -8,8 +8,6 @@ TODO:
 
 - make 1.5 compatible
   - fix configuration layout.
-  - fix checkout layout. (iframe)
-  - fix order layout
   gr
   ----> i dont like layout stuff :(
 

@@ -2,6 +2,10 @@
 /* ==== Switch Css ==== */
 /* ==================== */
 
+#dpd-main-container h2 {
+    clear: both;
+}
+
 #dpd-main-container .onoffswitch {
     position: relative; width: 90px;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
@@ -14,6 +18,7 @@
 #dpd-main-container .onoffswitch-label {
     display: block; overflow: hidden; cursor: pointer;
     border: 2px solid #999999; border-radius: 20px;
+    width: 85px; padding:0; text-align: left;
 }
 
 #dpd-main-container .onoffswitch-inner {
@@ -327,6 +332,10 @@
 
 #dpd-starting {
     width: 100%;
+}
+
+#dpd-starting span{
+    clear: both;
 }
 
 #dpd-starting ol {

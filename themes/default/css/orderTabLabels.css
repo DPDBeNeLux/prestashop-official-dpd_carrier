@@ -21,6 +21,16 @@
 #labels_table {
     width: 100%;
 }
+
+#generate_count {
+    width: 50%;
+    float: left;
+}
+
+#generate_label {
+    float: right;
+}
+
 .dpd label {
     clear: both;
     width: 8em;
