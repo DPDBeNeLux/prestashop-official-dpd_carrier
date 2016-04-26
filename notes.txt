@@ -10,7 +10,8 @@ TODO:
   - fix configuration layout.
   - fix checkout layout. (iframe)
   - handle PS1.5 display hooks.
-  
+
+- add imagick check in configuration
 
 - Remove personal Google maps api key :) and reset it on google.
 

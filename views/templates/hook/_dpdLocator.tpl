@@ -56,19 +56,19 @@
                 if(this.checked){
                     DpdShowLocator();
                 }
-                this.onchange = function(){
+                $(this).change(function(){
                     if (this.checked) {
                         DpdShowLocator();
                     }
-                    return false;
-                }
+                    //return false;
+                });
             } else {
-                this.onchange = function(){
+                $(this).change(function(){
                     if (this.checked) {
                         DpdHideLocator();
                     }
-                    return false
-                }
+                    //return false;
+                });
             }
         });
     });

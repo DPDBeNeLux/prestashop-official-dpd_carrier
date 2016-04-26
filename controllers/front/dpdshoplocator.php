@@ -75,7 +75,6 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         $this->display_header = false;
         $this->display_footer = false;
         parent::display();
-        die;
     }
     
     public function displayAjax()
