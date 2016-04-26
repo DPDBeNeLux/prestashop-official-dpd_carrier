@@ -266,7 +266,7 @@ class AdminDpdLabelsController extends ModuleAdminController
         }
         $range = Tools::getValue('selected_labels');
         
-        if (count($range) > 0) {
+        if (count($range) > 0 && $range) {
             DpdHelper::downloadLabels($range);
         } else {
             $this->output['warning']['no-labels'] = "No labels selected";

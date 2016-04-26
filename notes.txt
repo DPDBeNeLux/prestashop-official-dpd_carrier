@@ -18,3 +18,5 @@ TODO:
 - make a DPD namespace in the beforeCarrierHook template
 
 - Make debug level configuratble.
+
+- check static key for locator request.
