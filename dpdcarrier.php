@@ -319,7 +319,7 @@ class DpdCarrier extends CarrierModule
     {
         $order = new Order($params['id_order']);
         if (DpdHelper::isDpdOrder($order)) {
-            return $this->orderTab($order);
+            return $this->orderTabContent($order);
         }
     }
     
@@ -333,11 +333,11 @@ class DpdCarrier extends CarrierModule
     public function hookDisplayAdminOrderContentOrder($params)
     {
         if (DpdHelper::isDpdOrder($params['order'])) {
-            return $this->orderTab($params['order']);
+            return $this->orderTabContent($params['order']);
         }
     }
     
-    private function orderTab($order){
+    private function orderTabContent($order){
         $this->context->controller->addCSS($this->_path.'themes/default/css/orderTabLabels.css');
         $this->context->controller->addJS($this->_path.'themes/default/js/orderTabLabels.js');
         

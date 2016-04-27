@@ -104,12 +104,12 @@
     </form>
     <form action="javascript:DPD.generateLabels();" method="post" id="dpd_generate_label_form" class="form-horizontal well hidden-print">
         <div class="row">
-            <div class="form-group pull-left col-lg-5">
+            <div class="form-group pull-left col-lg-5" style="float: left;">
                 <label class="control-label col-lg-4">{l s='Count' mod='dpdcarrier'}</label>
                 <input type="text" name="label_count" class="form-control fixed-width-sm" value="1" onchange="DPD.updateLabelCount(event);"/>
                 <input type="hidden" name="id_order" value="{$order->id|escape:'htmlall':'UTF-8'}" />
             </div>
-            <button type="submit" name="action" class="btn btn-primary pull-right" value="generate">
+            <button type="submit" name="action" class="btn btn-primary pull-right" value="generate" style="float: right;">
                 {l s='Generate Label(s)' mod='dpdcarrier'}
             </button>
         </div>
@@ -124,39 +124,39 @@
                 </thead>
                 <tbody id="dpd_additional_options" style="display: none;">
                     <tr>
-                        <td>
+                        <td style="width: 50%">
                             <label class="control-label col-lg-3">{l s='Weight' mod='dpdcarrier'}</label>
-                            <input type="text" name="label_weight" class="form-control fixed-width-sm" value="{$order_weight|escape:'htmlall':'UTF-8'}"/>
+                            <input type="text" name="label_weight" class="form-control fixed-width-sm" value="{$order_weight|escape:'htmlall':'UTF-8'}"/><br>
                             <label class="control-label col-lg-3">{l s='Length' mod='dpdcarrier'}</label>
-                            <input type="text" name="label_length" class="form-control fixed-width-sm" value="0" />
+                            <input type="text" name="label_length" class="form-control fixed-width-sm" value="0" /><br>
                             <label class="control-label col-lg-3">{l s='Height' mod='dpdcarrier'}</label>
-                            <input type="text" name="label_height" class="form-control fixed-width-sm" value="0" />
+                            <input type="text" name="label_height" class="form-control fixed-width-sm" value="0" /><br>
                             <label class="control-label col-lg-3">{l s='Depth' mod='dpdcarrier'}</label>
-                            <input type="text" name="label_depth" class="form-control fixed-width-sm" value="0" />
+                            <input type="text" name="label_depth" class="form-control fixed-width-sm" value="0" /><br>
                             <label class="control-label col-lg-3">{l s='Value' mod='dpdcarrier'}</label>
-                            <input type="text" id="dpd_label_value" name="label_value" class="form-control fixed-width-sm" value="{$order->total_paid|escape:'htmlall':'UTF-8'}" />
+                            <input type="text" id="dpd_label_value" name="label_value" class="form-control fixed-width-sm" value="{$order->total_paid|escape:'htmlall':'UTF-8'}" /><br>
                             <label class="control-label col-lg-3">{l s='Shop ID' mod='dpdcarrier'}</label>
-                            <input type="text" id="dpd_label_ps_id" name="label_ps_id" class="form-control fixed-width-sm" value="{if isset($shop_info['id_location'])}{$shop_info['id_location']|escape:'htmlall':'UTF-8'}{/if}"/>
+                            <input type="text" id="dpd_label_ps_id" name="label_ps_id" class="form-control fixed-width-sm" value="{if isset($shop_info['id_location'])}{$shop_info['id_location']|escape:'htmlall':'UTF-8'}{/if}"/><br>
                         </td>
-                        <td>
+                        <td style="width: 25%">
                             <label class="control-label col-lg-3 nowrap">{l s='COD' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_cod_delivery" name="cod_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['cod']}checked{/if}/>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_cod_delivery" name="cod_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['cod']}checked{/if}/><br>
                             <label class="control-label col-lg-3 nowrap">{l s='Complete' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_comp_delivery" name="comp_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['comp']}checked{/if}/>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_comp_delivery" name="comp_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['comp']}checked{/if}/><br>
                             <label class="control-label col-lg-3 nowrap">{l s='Express 10' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_e10_delivery" name="e10_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['e10']}checked{/if}/>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_e10_delivery" name="e10_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['e10']}checked{/if}/><br>
                             <label class="control-label col-lg-3 nowrap">{l s='Express 12' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_e12_delivery" name="e12_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['e12']}checked{/if}/>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_e12_delivery" name="e12_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['e12']}checked{/if}/><br>
                         </td>
-                        <td>
+                        <td style="width: 25%">
                             <label class="control-label col-lg-3 nowrap">{l s='Guarantee 18' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_e18_delivery" name="e18_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['e18']}checked{/if}/>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_e18_delivery" name="e18_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['e18']}checked{/if}/><br>
                             <label class="control-label col-lg-3 nowrap">{l s='Pickup' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_dps_delivery" name="dps_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['dps']}checked{/if}>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_dps_delivery" name="dps_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['dps']}checked{/if}><br>
                             <label class="control-label col-lg-3 nowrap">{l s='Predict' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_predict_delivery" name="predict_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['predict']}checked{/if}/>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_predict_delivery" name="predict_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);" {if $init_settings['predict']}checked{/if}/><br>
                             <label class="control-label col-lg-3 nowrap">{l s='Saturday' mod='dpdcarrier'}</label>
-                            <input type="checkbox" id="dpd_sat_delivery" name="sat_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);"/ {if $init_settings['sat']}checked{/if}>
+                            <input style="margin: 5px;" type="checkbox" id="dpd_sat_delivery" name="sat_delivery" value="1" class="form-control fixed-width-sm" onchange="DPD.optionSelected(event);"/ {if $init_settings['sat']}checked{/if}>
                         </td>
                     </tr>
                 </tbody>

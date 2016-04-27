@@ -6,3 +6,24 @@
 
     border-top: 10px solid #000;
 }
+.dpd.loading {
+    background: url('/img/loader.gif') no-repeat;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+}
+.badge#dpd_label_count {
+    display: none;
+}
+.table-responsive table {
+    width: 100%;
+}
+#labels_table {
+    width: 100%;
+}
+label {
+    width: 100px;
+}
+input[type='checkbox'] {
+    padding: 3px;
+}
