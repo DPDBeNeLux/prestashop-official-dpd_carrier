@@ -728,7 +728,7 @@ class DpdHelper
             self::loadFPDx();
             
             $size = (string)(Configuration::get(DpdHelper::generateVariableName('label format')));
-            if (empty($size)) {
+            if (!$size) {
                 $size = 'A6';
             }
             
@@ -749,11 +749,19 @@ class DpdHelper
                             || ($size == 'A4' && ($count % 4) == 0)) {
                             $pdf->addPage('P', $size);
                         }
-                        $binCount = str_pad(decbin($count+1), 2, 0, STR_PAD_LEFT);
-                        $firstBit = (int)Tools::substr($binCount, -1);
-                        $secondBit = (int)Tools::substr($binCount, -2, 1);
                         
-                        $verticalPos = !($firstBit xor $secondBit);
+                        $firstBit = 1;
+                        $secondBit = 1;
+                        $verticalPos = 0;
+                        
+                        if ($size == 'A4') {
+                            $binCount = str_pad(decbin($count+1), 2, 0, STR_PAD_LEFT);
+                            $firstBit = (int)Tools::substr($binCount, -1);
+                            $secondBit = (int)Tools::substr($binCount, -2, 1);
+                            $verticalPos = !($firstBit xor $secondBit);
+                        }
+
+                        
                         $pdf->useTemplate($tplIdx, !$firstBit * 105, $verticalPos * 148);
                         
                         $count++;

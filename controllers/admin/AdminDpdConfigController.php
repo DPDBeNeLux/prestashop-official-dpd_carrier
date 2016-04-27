@@ -280,7 +280,7 @@ class AdminDpdConfigController extends ModuleAdminController
     private function saveAdvancedConfiguration()
     {
         $status = $this->module->l('default');
-        if ((string)Tools::getValue('locator-container-id') 8= '') {
+        if ((string)Tools::getValue('locator-container-id') != '') {
             $status = (string)Tools::getValue('locator-container-id');
         }
         

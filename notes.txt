@@ -10,7 +10,7 @@ TODO:
   - fix configuration layout.
   - fix checkout layout. (iframe)
   - fix order layout
-  
+  gr
   ----> i dont like layout stuff :(
 
 - add imagick check in configuration
@@ -26,3 +26,7 @@ TODO:
 - get installer and uninstaller warnings to work.
 
 - rewrite the (full)description to use a template instead of hard coding it :)
+
+- add error reporting to label generation (eg: no connection to ws)
+
+- add select all checkbox in order view.

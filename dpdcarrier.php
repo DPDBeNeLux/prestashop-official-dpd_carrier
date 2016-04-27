@@ -319,19 +319,7 @@ class DpdCarrier extends CarrierModule
     {
         $order = new Order($params['id_order']);
         if (DpdHelper::isDpdOrder($order)) {
-            $order_carrier = new OrderCarrier($order->getIdOrderCarrier());
-            $cart = new Cart($order->id_cart);
-            $this->context->smarty->assign(
-                array(
-                    'controllerUrl' => $this->context->link->getAdminLink('AdminDpdLabels') . "&ajax=true"
-                    ,'order_weight' => $order_carrier->weight
-                    ,'order' => $order
-                    ,'shop_info' => DpdHelper::getParcelShopInfo($cart)
-                    ,'init_settings' => DpdHelper::getInitialOrderSettings($order)
-                )
-            );
-            
-            return $this->display(__FILE__, '_adminOrderTabLabels15.tpl');
+            return $this->orderTab($order);
         }
     }
     
@@ -345,20 +333,28 @@ class DpdCarrier extends CarrierModule
     public function hookDisplayAdminOrderContentOrder($params)
     {
         if (DpdHelper::isDpdOrder($params['order'])) {
-            $order_carrier = new OrderCarrier($params['order']->getIdOrderCarrier());
-            $cart = new Cart($params['order']->id_cart);
-            $this->context->smarty->assign(
-                array(
-                    'controllerUrl' => $this->context->link->getAdminLink('AdminDpdLabels') . "&ajax=true"
-                    ,'order_weight' => $order_carrier->weight
-                    ,'order' => $params['order']
-                    ,'shop_info' => DpdHelper::getParcelShopInfo($cart)
-                    ,'init_settings' => DpdHelper::getInitialOrderSettings($params['order'])
-                )
-            );
-            
-            return $this->display(__FILE__, '_adminOrderTabLabels16.tpl');
+            return $this->orderTab($params['order']);
         }
+    }
+    
+    private function orderTab($order){
+        $this->context->controller->addCSS($this->_path.'themes/default/css/orderTabLabels.css');
+        $this->context->controller->addJS($this->_path.'themes/default/js/orderTabLabels.js');
+        
+        $order_carrier = new OrderCarrier($order->getIdOrderCarrier());
+        $cart = new Cart($order->id_cart);
+        $this->context->smarty->assign(
+            array(
+                'controllerUrl' => $this->context->link->getAdminLink('AdminDpdLabels') . "&ajax=true"
+                ,'order_weight' => $order_carrier->weight
+                ,'order' => $order
+                ,'shop_info' => DpdHelper::getParcelShopInfo($cart)
+                ,'init_settings' => DpdHelper::getInitialOrderSettings($order)
+                ,'version' => substr(_PS_VERSION_, 0, 3)
+            )
+        );
+        
+        return $this->display(__FILE__, '_adminOrderTabLabelsConfig.tpl') . $this->display(__FILE__, '_adminOrderTabLabels.tpl');
     }
     
     public function hookActionOrderStatusUpdate($params)
