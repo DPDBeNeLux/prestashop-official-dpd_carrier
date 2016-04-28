@@ -75,7 +75,7 @@ class AdminDpdConfigController extends ModuleAdminController
         } elseif (Tools::getIsset('states')) {
             $this->getOrderStates();
         } elseif (Tools::getIsset('step')) {
-            switch(Tools::getValue('step')) {
+            switch((int)Tools::getValue('step')) {
                 case 0:
                     $this->mailAccountRequest();
                     break;
@@ -108,32 +108,32 @@ class AdminDpdConfigController extends ModuleAdminController
     {
         $result = array();
         
-        $delisid = Configuration::get(DpdHelper::generateVariableName('delisid'));
+        $delisid = (string)Configuration::get((string)DpdHelper::generateVariableName('delisid'));
         if ($delisid) {
             $result['delisid'] = $delisid;
         }
         
-        $live_server = Configuration::get(DpdHelper::generateVariableName('live_server'));
+        $live_server = (bool)Configuration::get((string)DpdHelper::generateVariableName('live_server'));
         if ($live_server) {
             $result['dpd-live-account'] = $live_server;
         }
         
-        $container_id = Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'));
+        $container_id = (string)Configuration::get((string)DpdHelper::generateVariableName('LOC_CON_ID'));
         if ($container_id) {
             $result['locator-container-id'] = $container_id;
         }
         
-        $return_label = Configuration::get(DpdHelper::generateVariableName('RET_LABEL_ID'));
+        $return_label = (bool)Configuration::get((string)DpdHelper::generateVariableName('RET_LABEL'));
         if ($return_label) {
             $result['dpd-return-label'] = $return_label;
         }
         
-        $auto_label = Configuration::get(DpdHelper::generateVariableName('label on status'));
+        $auto_label = (string)Configuration::get((string)DpdHelper::generateVariableName('label on status'));
         if ($auto_label) {
             $result['dpd-label-on-state'] = $auto_label;
         }
         
-        $label_format = Configuration::get(DpdHelper::generateVariableName('label format'));
+        $label_format = (string)Configuration::get((string)DpdHelper::generateVariableName('label format'));
         if ($label_format) {
             $result['dpd-label-format'] = $label_format;
         }
@@ -156,10 +156,10 @@ class AdminDpdConfigController extends ModuleAdminController
     
     private function testLogin()
     {
-        if (!Tools::getIsset('delisid') || Tools::getValue('delisid') =='') {
+        if (!(bool)Tools::getIsset('delisid') || (string)Tools::getValue('delisid') =='') {
             $this->output["validation"]["delisid"] = $this->module->l("Please enter your delisID.");
         }
-        if (!Tools::getIsset('password') || Tools::getValue('password') =='') {
+        if (!(bool)Tools::getIsset('password') || (string)Tools::getValue('password') =='') {
             $this->output["validation"]["password"] = $this->module->l("Please enter your password.");
         }
         
@@ -170,13 +170,13 @@ class AdminDpdConfigController extends ModuleAdminController
               'https://public-dis.dpd.nl/Services/' :
               'https://public-dis-stage.dpd.nl/Services/';
             
-            $dpdLogin = new DisLogin(Tools::getValue('delisid'), Tools::getValue('password'), $url);
+            $dpdLogin = new DisLogin((string)Tools::getValue('delisid'), (string)Tools::getValue('password'), $url);
             // The constructor will use a cached value if available,
             // so to test the credentials we need to trigger a refresh
             if (!$dpdLogin->refreshed) {
                 $dpdLogin->refresh();
             }
-            if ($dpdLogin->getToken() == "") {
+            if ((string)$dpdLogin->getToken() == "") {
                 $this->output["warning"]["dis-login"] = $this->module->l(
                     "Seems like your user name and password don't work. " .
                     "Perhaps you can try it on the other server?"
@@ -202,7 +202,7 @@ class AdminDpdConfigController extends ModuleAdminController
         $cache = Cache::getInstance();
         $cache->set("DPDTest", "Hello World!", 60);
         $return = $cache->get("DPDTest");
-        if (!$return || $return != "Hello World!") {
+        if (!$return || (string)$return != "Hello World!") {
             $this->output["warning"]["prestashop-cache"] = $this->module->l(
                 "It looks like no cache is enabled on your system. " .
                 "Please note that you'll need cache enabled when you start using the live services."
@@ -226,29 +226,29 @@ class AdminDpdConfigController extends ModuleAdminController
     
     private function saveUserCredentials()
     {
-        if (!Tools::getIsset('delisid') || Tools::getValue('delisid') =='') {
+        if (!(bool)Tools::getIsset('delisid') || (string)Tools::getValue('delisid') =='') {
             $this->output["validation"]["delisid"] = $this->module->l("Please enter your delisID.");
         }
-        if (!Tools::getIsset('password') || Tools::getValue('password') =='') {
+        if (!(bool)Tools::getIsset('password') || (string)Tools::getValue('password') =='') {
             $this->output["validation"]["password"] = $this->module->l("Please enter your password.");
         }
         
         if (count($this->output["validation"]) == 0) {
             Configuration::updateValue(
-                DpdHelper::generateVariableName('delisid'),
-                Tools::getValue('delisid'),
+                (string)DpdHelper::generateVariableName('delisid'),
+                (string)Tools::getValue('delisid'),
                 $this->id_shop_group,
                 $this->id_shop
             );
             Configuration::updateValue(
-                DpdHelper::generateVariableName('password'),
-                Tools::getValue('password'),
+                (string)DpdHelper::generateVariableName('password'),
+                (string)Tools::getValue('password'),
                 $this->id_shop_group,
                 $this->id_shop
             );
             Configuration::updateValue(
-                DpdHelper::generateVariableName('live_server'),
-                Tools::getIsset('dpd-live-account'),
+                (string)DpdHelper::generateVariableName('live_server'),
+                (bool)Tools::getIsset('dpd-live-account'),
                 $this->id_shop_group,
                 $this->id_shop
             );
@@ -265,12 +265,13 @@ class AdminDpdConfigController extends ModuleAdminController
         
         $shipping_services = new DisServices();
         foreach ($shipping_services->services as $service) {
-            $carrier = new Carrier(Configuration::get(DpdHelper::generateVariableName($service->name . ' id')));
+            $configuration_name = (string)DpdHelper::generateVariableName($service->name . ' id');
+            $carrier = new Carrier((int)Configuration::get($configuration_name));
             if (!empty($carrier->id)) {
-                $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . $this->context->language->iso_code
-                    . '_' .
-                    $this->context->country->iso_code .
-                    '&delisId=' . Tools::getValue('delisid') .
+                $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . 
+                    (string)$this->context->language->iso_code . '_' .
+                    (string)$this->context->country->iso_code .
+                    '&delisId=' . (string)Tools::getValue('delisid') .
                     '&matchCode=@';
                 $carrier->save();
             }
@@ -285,7 +286,7 @@ class AdminDpdConfigController extends ModuleAdminController
         }
         
         Configuration::updateValue(
-            DpdHelper::generateVariableName('LOC_CON_ID'),
+            (string)DpdHelper::generateVariableName('LOC_CON_ID'),
             (string)Tools::getValue('locator-container-id'),
             $this->id_shop_group,
             $this->id_shop
@@ -293,7 +294,7 @@ class AdminDpdConfigController extends ModuleAdminController
         $this->output["success"]["locator-container-id"] = $this->module->l('Locator container ID set to') . ' ' . $status;
 
         Configuration::updateValue(
-            DpdHelper::generateVariableName('RET_LABEL_ID'),
+            (string)DpdHelper::generateVariableName('RET_LABEL'),
             (bool)Tools::getIsset('dpd-return-label'),
             $this->id_shop_group,
             $this->id_shop
@@ -318,7 +319,7 @@ class AdminDpdConfigController extends ModuleAdminController
         }
         
         Configuration::updateValue(
-            DpdHelper::generateVariableName('label on status'),
+            (string)DpdHelper::generateVariableName('label on status'),
             (int)Tools::getValue('dpd-label-on-state'),
             $this->id_shop_group,
             $this->id_shop
@@ -326,7 +327,7 @@ class AdminDpdConfigController extends ModuleAdminController
         $this->output["success"]["dpd-label-on-state"] = $this->module->l('Labels (for DPD orders)') . ' ' . $status;
         
         Configuration::updateValue(
-            DpdHelper::generateVariableName('label format'),
+            (string)DpdHelper::generateVariableName('label format'),
             (string)Tools::getValue('dpd-label-format'),
             $this->id_shop_group,
             $this->id_shop
@@ -337,23 +338,23 @@ class AdminDpdConfigController extends ModuleAdminController
     
     private function mailDisAccountRequest()
     {
-        if (!Tools::getIsset('delisid') || Tools::getValue('delisid') == '') {
+        if (!(bool)Tools::getIsset('delisid') || (string)Tools::getValue('delisid') == '') {
             $this->output["validation"]["delisid"] = $this->module->l("Please enter your delisID.");
         }
-        if (!Tools::getIsset('password') || Tools::getValue('password') =='') {
+        if (!(bool)Tools::getIsset('password') || (string)Tools::getValue('password') =='') {
             $this->output["validation"]["password"] = $this->module->l("Please enter your password.");
         }
         
         if (count($this->output["validation"]) == 0) {
-            $id_lang = Language::getIdByIso("EN");//Tools::getValue('country'));
-            $subject = '[' . Tools::getValue('country') . '] New DIS account request: ' . Tools::getValue('delisid');
+            $id_lang = (string)Language::getIdByIso("EN");//Tools::getValue('country'));
+            $subject = '[' . (string)Tools::getValue('country') . '] New DIS account request: ' . (string)Tools::getValue('delisid');
             
             $template_vars = array(
-              '{delisid}' => Tools::getValue('delisid')
+              '{delisid}' => (string)Tools::getValue('delisid')
             );
             
             if (Mail::Send(
-                $id_lang,
+                (string)$id_lang,
                 'DIS_account_request',
                 $subject,
                 $template_vars,
@@ -386,54 +387,54 @@ class AdminDpdConfigController extends ModuleAdminController
     
     private function mailAccountRequest()
     {
-        if (!Tools::getIsset('company') || Tools::getValue('company') == '') {
+        if (!(bool)Tools::getIsset('company') || (string)Tools::getValue('company') == '') {
             $this->output["validation"]["company"] = $this->module->l("Please enter your company name.");
         }
-        if (!Tools::getIsset('ppm') || Tools::getValue('ppm') =='') {
+        if (!(bool)Tools::getIsset('ppm') || (string)Tools::getValue('ppm') == '') {
             $this->output["validation"]["ppm"] = $this->module->l(
                 "Please enter the amount of parcels you are " .
                 "(planning on) shipping a month."
             );
         }
-        if (!Tools::getIsset('contact') || Tools::getValue('contact') =='') {
+        if (!(bool)Tools::getIsset('contact') || (string)Tools::getValue('contact') =='') {
             $this->output["validation"]["contact"] = $this->module->l("Please enter your name.");
         }
-        if (!Tools::getIsset('email') || Tools::getValue('email') =='') {
+        if (!(bool)Tools::getIsset('email') || (string)Tools::getValue('email') =='') {
             $this->output["validation"]["email"] = $this->module->l("Please enter your email.");
         }
-        if (!Tools::getIsset('phone') || Tools::getValue('phone') =='') {
+        if (!(bool)Tools::getIsset('phone') || (string)Tools::getValue('phone') =='') {
             $this->output["validation"]["phone"] = $this->module->l("Please enter your phone number.");
         }
-        if (!Tools::getIsset('street') || Tools::getValue('street') =='') {
+        if (!(bool)Tools::getIsset('street') || (string)Tools::getValue('street') =='') {
             $this->output["validation"]["street"] = $this->module->l("Please enter your street.");
         }
-        if (!Tools::getIsset('houseno') || Tools::getValue('houseno') =='') {
+        if (!(bool)Tools::getIsset('houseno') || (string)Tools::getValue('houseno') =='') {
             $this->output["validation"]["houseno"] = $this->module->l("Please enter your house number.");
         }
-        if (!Tools::getIsset('country') || Tools::getValue('country') =='') {
+        if (!(bool)Tools::getIsset('country') || (string)Tools::getValue('country') =='') {
             $this->output["validation"]["country"] = $this->module->l("Please select your country.");
         }
-        if (!Tools::getIsset('postcode') || Tools::getValue('postcode') =='') {
+        if (!(bool)Tools::getIsset('postcode') || (string)Tools::getValue('postcode') =='') {
             $this->output["validation"]["postcode"] = $this->module->l("Please enter your postal code.");
         }
-        if (!Tools::getIsset('city') || Tools::getValue('city') =='') {
+        if (!(bool)Tools::getIsset('city') || (string)Tools::getValue('city') =='') {
             $this->output["validation"]["city"] = $this->module->l("Please enter your city.");
         }
         
         if (count($this->output["validation"]) == 0) {
-            $id_lang = Language::getIdByIso("EN");//Tools::getValue('country'));
-            $subject = '[' . Tools::getValue('country') . '] New account request: ' . Tools::getValue('company');
+            $id_lang = (string)Language::getIdByIso("EN");//Tools::getValue('country'));
+            $subject = '[' . (string)Tools::getValue('country') . '] New account request: ' . (string)Tools::getValue('company');
             
             $template_vars = array(
-              '{company}' => Tools::getValue('company')
-              ,'{ppm}' => Tools::getValue('ppm')
-              ,'{contact}' => Tools::getValue('contact')
-              ,'{email}' => Tools::getValue('email')
-              ,'{phone}' => Tools::getValue('phone')
-              ,'{address}' => Tools::getValue('street') . " " . Tools::getValue('houseno')
-              ,'{country}' => Tools::getValue('country')
-              ,'{postal}' => Tools::getValue('postcode')
-              ,'{city}' => Tools::getValue('city')
+              '{company}' => (string)Tools::getValue('company')
+              ,'{ppm}' => (string)Tools::getValue('ppm')
+              ,'{contact}' => (string)Tools::getValue('contact')
+              ,'{email}' => (string)(string)Tools::getValue('email')
+              ,'{phone}' => (string)Tools::getValue('phone')
+              ,'{address}' => (string)Tools::getValue('street') . " " . (string)Tools::getValue('houseno')
+              ,'{country}' => (string)Tools::getValue('country')
+              ,'{postal}' => (string)Tools::getValue('postcode')
+              ,'{city}' => (string)Tools::getValue('city')
             );
             
             if (Mail::Send(

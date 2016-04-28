@@ -57,9 +57,9 @@ class AdminDpdStatsController extends ModuleAdminController
     
     public function displayAjax()
     {
-        $parcelshop_carrier_id = Configuration::get(DpdHelper::generateVariableName('pickup id'));
-        $classic_carrier_id = Configuration::get(DpdHelper::generateVariableName('home id'));
-        $home_carrier_id = Configuration::get(DpdHelper::generateVariableName('home with predict id'));
+        $parcelshop_carrier_id = (int)Configuration::get((string)DpdHelper::generateVariableName('pickup id'));
+        $classic_carrier_id = (int)Configuration::get((string)DpdHelper::generateVariableName('home id'));
+        $home_carrier_id = (int)Configuration::get((string)DpdHelper::generateVariableName('home with predict id'));
         
         $parcelshop_carrier = new Carrier($parcelshop_carrier_id);
         $classic_carrier = new Carrier($classic_carrier_id);

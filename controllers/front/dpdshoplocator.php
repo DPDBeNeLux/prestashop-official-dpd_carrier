@@ -86,8 +86,8 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             ,'error' => array()
             ,'validation' => array()
         );
-        if (Tools::getIsset('action')) {
-            switch(Tools::getValue('action')) {
+        if ((bool)Tools::getIsset('action')) {
+            switch((string)Tools::getValue('action')) {
                 case 'find':
                     $this->findShops();
                     break;
@@ -109,16 +109,16 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
     private function findShops()
     {
         $searchData = array();
-        $deliveryAddress = new Address($this->context->cart->id_address_delivery);
+        $deliveryAddress = new Address((int)$this->context->cart->id_address_delivery);
         
-        if (Tools::getIsset('lng') && Tools::getIsset('lat')) {
+        if ((bool)Tools::getIsset('lng') && (bool)Tools::getIsset('lat')) {
             $searchData = array(
-                'Long' => Tools::getValue('lng')
-                ,'Lat' => Tools::getValue('lat')
+                'Long' => (float)Tools::getValue('lng')
+                ,'Lat' => (float)Tools::getValue('lat')
             );
-        } elseif (Tools::getIsset('query') && Tools::getValue('query') != '') {
+        } elseif ((bool)Tools::getIsset('query') && (string)Tools::getValue('query') != '') {
             $searchData = array(
-                'Query' => Tools::getValue('query')
+                'Query' => (string)Tools::getValue('query')
             );
         } else {
             $searchData = array(
@@ -130,11 +130,11 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             );
         }
         
-        if (Tools::getIsset('day') && Tools::getValue('day') != '') {
-            $searchData['DayOfWeek'] = Tools::getValue('day');
+        if ((bool)Tools::getIsset('day') && (string)Tools::getValue('day') != '') {
+            $searchData['DayOfWeek'] = (string)Tools::getValue('day');
         }
-        if (Tools::getIsset('time') && Tools::getValue('time') != '') {
-            $searchData['TimeOfDay'] = Tools::getValue('time');
+        if ((bool)Tools::getIsset('time') && (string)Tools::getValue('time') != '') {
+            $searchData['TimeOfDay'] = (string)Tools::getValue('time');
         }
         
         DpdHelper::loadDis();
@@ -205,9 +205,9 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
     
     private function saveShop($shop)
     {
-        $id_cart = $this->context->cart->id;
-        $id_carrier = $this->context->cart->id_carrier;
-        $id_location = $shop->parcelShopId;
+        $id_cart = (int)$this->context->cart->id;
+        $id_carrier = (int)$this->context->cart->id_carrier;
+        $id_location = (string)$shop->parcelShopId;
         $dbInstance = Db::getInstance();
         
         $dbInstance->insert(
@@ -274,31 +274,45 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                 "The shopID provided wasn't proposed " .
                 "or is disabled since your lookup"
             );
-        }
-        
-        //TODO - delete cookie.
-        
+        }        
     }
     
     private function getProposedShop()
     {
-        if (!Tools::getIsset('dpdshopid') || Tools::getValue('dpdshopid') =='') {
+        if (!(bool)Tools::getIsset('dpdshopid') || (string)Tools::getValue('dpdshopid') =='') {
             $this->output['validation']['dpdshopid'] = $this->module->l('No parcelshop selection found.');
         }
         
         if (count($this->output['validation']) == 0) {
             $cookie = new Cookie('dpdshops');
-            $searchData = unserialize($cookie->last_search);
-            
-            $shopFinder = new DisParcelShopFinder($this->disLogin);
-            $result = $shopFinder->search($searchData);
-            
-            if (!$result || !isset($result->shops[Tools::getValue('dpdshopid')])) {
+            if (isset($cookie->last_search)) {
+                $searchData = unserialize($cookie->last_search);
+                
+                $shopFinder = new DisParcelShopFinder($this->disLogin);
+                $result = $shopFinder->search($searchData);
+                
+                if (!$result || !isset($result->shops[(string)Tools::getValue('dpdshopid')])) {
+                    Logger::addLog(
+                        'Customer, ' . $this->context->customer->firstname . ' ' .
+                        $this->context->customer->lastname . ' (' .
+                        $this->context->customer->id . '), tried to use a shop ID that wasn\'t proposed to him (' .
+                        (string)Tools::getValue('dpdshopid') . ')',
+                        2,
+                        null,
+                        null,
+                        null,
+                        true
+                    );
+                    return false;
+                }
+                
+                return $result->shops[Tools::getValue('dpdshopid')];
+            } else {
                 Logger::addLog(
                     'Customer, ' . $this->context->customer->firstname . ' ' .
                     $this->context->customer->lastname . ' (' .
-                    $this->context->customer->id . '), tried to use a shop ID that wasn\'t proposed to him (' .
-                    Tools::getValue('dpdshopid') . ')',
+                    $this->context->customer->id . '), tried to use a shop ID without a search first (' .
+                    (string)Tools::getValue('dpdshopid') . ')',
                     2,
                     null,
                     null,
@@ -307,8 +321,6 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                 );
                 return false;
             }
-            
-            return $result->shops[Tools::getValue('dpdshopid')];
         }
         
         return false;

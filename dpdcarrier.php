@@ -256,7 +256,7 @@ class DpdCarrier extends CarrierModule
         $dis_services = new DisServices();
         
         foreach ($dis_services->services as $service) {
-            $var_name = DpdHelper::generateVariableName($service->name . ' id');
+            $var_name = (string)DpdHelper::generateVariableName($service->name . ' id');
             
             if ((int)($params['id_carrier']) == (int)(Configuration::get($var_name))) {
                 Configuration::updateValue($var_name, (int)($params['carrier']->id));
@@ -268,7 +268,7 @@ class DpdCarrier extends CarrierModule
     {
         $this->context->smarty->assign(
             array(
-                'carrier_id' => Configuration::get(DpdHelper::generateVariableName('PICKUP_ID'))
+                'carrier_id' => (int)Configuration::get((string)DpdHelper::generateVariableName('PICKUP_ID'))
             )
         );
         
@@ -278,10 +278,10 @@ class DpdCarrier extends CarrierModule
     public function hookActionCarrierProcess($params)
     {
         // Only do this when normal 5 step checkout.
-        $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
+        $currentPickupId = (int)(Configuration::get((string)DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             if (!DpdHelper::getParcelShopInfo($params['cart'])) {
-                $this->context->controller->errors[] = Tools::displayError('Please select a parcelshop.');
+                $this->context->controller->errors[] = Tools::displayError($this->l('Please select a parcelshop.'));
                 return false;
             }
         }
@@ -289,7 +289,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookDisplayPaymentTop($params)
     {
-        $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
+        $currentPickupId = (int)(Configuration::get((string)DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['cart']->id_carrier) == $currentPickupId) {
             $this->context->smarty->assign(
                 array(
@@ -302,7 +302,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookDisplayOrderConfirmation($params)
     {
-        $currentPickupId = (int)(Configuration::get(DpdHelper::generateVariableName('PICKUP_ID')));
+        $currentPickupId = (int)(Configuration::get((string)DpdHelper::generateVariableName('PICKUP_ID')));
         if ((int)($params['objOrder']->id_carrier) == $currentPickupId) {
             $cart = new Cart($params['objOrder']->id_cart);
             $this->context->smarty->assign(
@@ -318,21 +318,21 @@ class DpdCarrier extends CarrierModule
     public function hookDisplayAdminOrder($params)
     {
         $order = new Order($params['id_order']);
-        if (DpdHelper::isDpdOrder($order)) {
+        if ((bool)DpdHelper::isDpdOrder($order)) {
             return $this->orderTabContent($order);
         }
     }
     
     public function hookDisplayAdminOrderTabOrder($params)
     {
-        if (DpdHelper::isDpdOrder($params['order'])) {
+        if ((bool)DpdHelper::isDpdOrder($params['order'])) {
             return $this->display(__FILE__, '_adminOrderTab.tpl');
         }
     }
     
     public function hookDisplayAdminOrderContentOrder($params)
     {
-        if (DpdHelper::isDpdOrder($params['order'])) {
+        if ((bool)DpdHelper::isDpdOrder($params['order'])) {
             return $this->orderTabContent($params['order']);
         }
     }
@@ -341,8 +341,8 @@ class DpdCarrier extends CarrierModule
         $this->context->controller->addCSS($this->_path.'themes/default/css/orderTabLabels.css');
         $this->context->controller->addJS($this->_path.'themes/default/js/orderTabLabels.js');
         
-        $order_carrier = new OrderCarrier($order->getIdOrderCarrier());
-        $cart = new Cart($order->id_cart);
+        $order_carrier = new OrderCarrier((int)$order->getIdOrderCarrier());
+        $cart = new Cart((int)$order->id_cart);
         $this->context->smarty->assign(
             array(
                 'controllerUrl' => $this->context->link->getAdminLink('AdminDpdLabels') . "&ajax=true"
@@ -359,7 +359,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookActionOrderStatusUpdate($params)
     {
-        $labelStatus = (int)Configuration::get(DpdHelper::generateVariableName('label on status'));
+        $labelStatus = (int)Configuration::get((string)DpdHelper::generateVariableName('label on status'));
         if ($params['newOrderStatus']->id == $labelStatus) {
             $order = new Order($params['id_order']);
             $labels = DpdHelper::getOrderLabelInfo($order);
@@ -371,7 +371,7 @@ class DpdCarrier extends CarrierModule
     
     public function hookDisplayPDFOrderReturn($params)
     {
-        if ((bool)Configuration::get(DpdHelper::generateVariableName('RET_LABEL_ID'))) {
+        if ((bool)Configuration::get((string)DpdHelper::generateVariableName('RET_LABEL'))) {
             $result = DpdHelper::generateReturnLabel($params['object']);
             
             if ($result) {
@@ -397,7 +397,7 @@ class DpdCarrier extends CarrierModule
             || is_a($this->context->controller, 'OrderOpcController')) {
             $this->context->smarty->assign(
                 array(
-                    'container_id' => Configuration::get(DpdHelper::generateVariableName('LOC_CON_ID'))
+                    'container_id' => (string)Configuration::get((string)DpdHelper::generateVariableName('LOC_CON_ID'))
                 )
             );
             

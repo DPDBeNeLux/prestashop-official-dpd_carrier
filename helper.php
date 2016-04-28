@@ -147,7 +147,8 @@ class DpdHelper
         $download_location = self::getLabelLocation();
         return file_exists($download_location)
           || ( mkdir($download_location, '755')
-              && copy(_PS_DOWNLOAD_DIR_ . DS . '.htaccess', $download_location . DS . '.htaccess'));
+              && copy(_PS_DOWNLOAD_DIR_ . DS . '.htaccess', $download_location . DS . '.htaccess')
+              && copy(_PS_DOWNLOAD_DIR_ . DS . 'index.php', $download_location . DS . 'index.php'));
     }
     
     public static function initCarriers()
@@ -859,7 +860,7 @@ class DpdHelper
     public static function getWeightMultiplier()
     {
         $weight_multiplier = 1;
-        switch(configuration::get('PS_WEIGHT_UNIT')) {
+        switch((string)configuration::get('PS_WEIGHT_UNIT')) {
             case 'mg':
                 $weight_multiplier = 1000000;
                 break;
@@ -885,7 +886,7 @@ class DpdHelper
     public static function getDimensionMultiplier()
     {
         $dimension_multiplier = 1;
-        switch(configuration::get('PS_DIMENSION_UNIT')) {
+        switch((string)configuration::get('PS_DIMENSION_UNIT')) {
             case 'mm':
                 $dimension_multiplier = 10;
                 break;
@@ -917,10 +918,10 @@ class DpdHelper
         
         // Configuration::loadConfiguration();
         
-        $delisId = Configuration::get(DpdHelper::generateVariableName('delisid'));
-        $delisPw = Configuration::get(DpdHelper::generateVariableName('password'));
+        $delisId = (string)Configuration::get((string)DpdHelper::generateVariableName('delisid'));
+        $delisPw = (string)Configuration::get((string)DpdHelper::generateVariableName('password'));
 
-        $url = Configuration::get(DpdHelper::generateVariableName('live_server')) == 1 ?
+        $url = (bool)Configuration::get((string)DpdHelper::generateVariableName('live_server')) ?
             'https://public-dis.dpd.nl/Services/' :
             'https://public-dis-stage.dpd.nl/Services/';
         

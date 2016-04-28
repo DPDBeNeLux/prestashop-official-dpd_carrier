@@ -118,10 +118,10 @@ class HTMLTemplateDpdShippingList extends HTMLTemplate
 
         $this->smarty->assign(array(
             'shop_address' => $shop_address,
-            'shop_fax' => Configuration::get('PS_SHOP_FAX', null, null, $id_shop),
-            'shop_phone' => Configuration::get('PS_SHOP_PHONE', null, null, $id_shop),
-            'shop_email' => Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
-            'free_text' => Configuration::get(
+            'shop_fax' => (string)Configuration::get('PS_SHOP_FAX', null, null, $id_shop),
+            'shop_phone' => (string)Configuration::get('PS_SHOP_PHONE', null, null, $id_shop),
+            'shop_email' => (string)Configuration::get('PS_SHOP_EMAIL', null, null, $id_shop),
+            'free_text' => (string)Configuration::get(
                 'PS_INVOICE_FREE_TEXT',
                 (int)Context::getContext()->language->id,
                 null,
@@ -134,7 +134,7 @@ class HTMLTemplateDpdShippingList extends HTMLTemplate
     
     protected function getTemplate($template_name)
     {
-        return DpdHelper::getPDFTemplate($template_name);
+        return DpdHelper::getPDFTemplate((string)$template_name);
     }
     
     /**

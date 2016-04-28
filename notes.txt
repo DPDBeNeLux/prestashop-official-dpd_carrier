@@ -4,13 +4,6 @@ TODO:
 
 - add shipping list option if not more then 1 label in list.
 
-- cast variables
-
-- make 1.5 compatible
-  - fix configuration layout.
-  gr
-  ----> i dont like layout stuff :(
-
 - add imagick check in configuration
 
 - Remove personal Google maps api key :) and reset it on google.
@@ -25,6 +18,13 @@ TODO:
 
 - rewrite the (full)description to use a template instead of hard coding it :)
 
-- add error reporting to label generation (eg: no connection to ws)
+- add error reporting to label generation (eg: no connection to ws, missing fields, ...)
 
 - add select all checkbox in order view.
+
+- add function documentation
+
+- !! check multistore DISLogin Caching 
+
+- remove hooks that aren't used
+

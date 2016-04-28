@@ -189,8 +189,8 @@ class AdminDpdLabelsController extends ModuleAdminController
     
     public function displayAjax()
     {
-        if (Tools::getIsset('action')) {
-            switch(Tools::getValue('action')) {
+        if ((bool)Tools::getIsset('action')) {
+            switch((string)Tools::getValue('action')) {
                 case 'generate':
                     $this->generateLabels();
                     break;
@@ -215,18 +215,18 @@ class AdminDpdLabelsController extends ModuleAdminController
     
     private function generateLabels()
     {
-        if (!Tools::getIsset('label_count') || (int)Tools::getValue('label_count') <= 0) {
-                $this->output["validation"]["label_count"] = "Please enter the amount of labels you need.";
+        if (!(bool)Tools::getIsset('label_count') || (int)Tools::getValue('label_count') <= 0) {
+                $this->output["validation"]["label_count"] = $this->module->l("Please enter the amount of labels you need.");
         }
-        if (!Tools::getIsset('label_weight') || (float)Tools::getValue('label_weight') < 0) {
-            $this->output["validation"]["label_weight"] = "Please enter the weight of the parcels.";
+        if (!(bool)Tools::getIsset('label_weight') || (float)Tools::getValue('label_weight') < 0) {
+            $this->output["validation"]["label_weight"] = $this->module->l("Please enter the weight of the parcels.");
         }
-        if (!Tools::getIsset('id_order') || Tools::getValue('id_order') == '') {
-            $this->output["validation"]["id_order"] = "Couldn't determine the order you are in.";
+        if (!(bool)Tools::getIsset('id_order') || (string)Tools::getValue('id_order') == '') {
+            $this->output["validation"]["id_order"] = $this->module->l("Couldn't determine the order you are in.");
         }
         
         if (count($this->output["validation"]) == 0) {
-            $order = new Order(Tools::getValue('id_order'));
+            $order = new Order((int)Tools::getValue('id_order'));
             $label_settings = array();
             
             $label_settings['count'] = (int)Tools::getValue('label_count');
@@ -252,14 +252,14 @@ class AdminDpdLabelsController extends ModuleAdminController
             }
             
 
-            $label_settings['cod'] = Tools::getIsset('cod_delivery');
-            $label_settings['dps'] = Tools::getIsset('dps_delivery');
-            $label_settings['predict'] = Tools::getIsset('predict_delivery');
-            $label_settings['sat'] = Tools::getIsset('sat_delivery');
-            $label_settings['comp'] = Tools::getIsset('comp_delivery');
-            $label_settings['e10'] = Tools::getIsset('e10_delivery');
-            $label_settings['e12'] = Tools::getIsset('e12_delivery');
-            $label_settings['e18'] = Tools::getIsset('e18_delivery');
+            $label_settings['cod'] = (bool)Tools::getIsset('cod_delivery');
+            $label_settings['dps'] = (bool)Tools::getIsset('dps_delivery');
+            $label_settings['predict'] = (bool)Tools::getIsset('predict_delivery');
+            $label_settings['sat'] = (bool)Tools::getIsset('sat_delivery');
+            $label_settings['comp'] = (bool)Tools::getIsset('comp_delivery');
+            $label_settings['e10'] = (bool)Tools::getIsset('e10_delivery');
+            $label_settings['e12'] = (bool)Tools::getIsset('e12_delivery');
+            $label_settings['e18'] = (bool)Tools::getIsset('e18_delivery');
             
             $this->output['success'] = DpdHelper::generateLabels($order, $label_settings);
         }
@@ -267,26 +267,23 @@ class AdminDpdLabelsController extends ModuleAdminController
     
     private function downloadLabels()
     {
-        if (!Tools::getIsset('selected_labels') || count(Tools::getValue('selected_labels')) == 0) {
-            $this->output["validation"]["id_order"] = "No labels selected";
-        }
         $range = Tools::getValue('selected_labels');
         
-        if (count($range) > 0 && $range) {
+        if ($range && count($range) > 0) {
             DpdHelper::downloadLabels($range);
         } else {
-            $this->output['warning']['no-labels'] = "No labels selected";
+            $this->output['validation']['no-labels'] = $this->module->l("No labels selected");
         }
     }
     
     private function infoLabels()
     {
-        if (!Tools::getIsset('id_order') || Tools::getValue('id_order') =='') {
-            $this->output["validation"]["id_order"] = "Couldn't determine the order you are in.";
+        if (!(bool)Tools::getIsset('id_order') || (string)Tools::getValue('id_order') =='') {
+            $this->output["validation"]["id_order"] = $this->module->l("Couldn't determine the order you are in.");
         }
         
         if (count($this->output["validation"]) == 0) {
-            $id_order = Tools::getValue('id_order');
+            $id_order = (int)Tools::getValue('id_order');
             $order = new Order($id_order);
             
             $this->output["success"] = DpdHelper::getOrderLabelInfo($order);
