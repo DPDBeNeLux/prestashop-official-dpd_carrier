@@ -1,0 +1,44 @@
+.dpd-arrow-down {
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+
+    border-top: 10px solid #000;
+}
+.dpd.loading {
+    background: url('/img/loader.gif') no-repeat;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+}
+.badge#dpd_label_count {
+    display: none;
+}
+.table-responsive table {
+    width: 100%;
+}
+#labels_table {
+    width: 100%;
+}
+
+#generate_count {
+    width: 50%;
+    float: left;
+}
+
+#generate_label {
+    float: right;
+}
+
+.dpd label {
+    clear: both;
+    width: 8em;
+    float: left;
+    margin-right: 10px;
+}
+#dpd_additional_options input {
+    width: 8em;
+    float: left;
+    display: inline-block;
+}
