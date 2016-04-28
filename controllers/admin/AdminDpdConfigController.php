@@ -268,7 +268,7 @@ class AdminDpdConfigController extends ModuleAdminController
             $configuration_name = (string)DpdHelper::generateVariableName($service->name . ' id');
             $carrier = new Carrier((int)Configuration::get($configuration_name));
             if (!empty($carrier->id)) {
-                $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' . 
+                $carrier->url = 'https://tracking.dpd.de/parcelstatus?locale=' .
                     (string)$this->context->language->iso_code . '_' .
                     (string)$this->context->country->iso_code .
                     '&delisId=' . (string)Tools::getValue('delisid') .

@@ -337,9 +337,10 @@ class DpdCarrier extends CarrierModule
         }
     }
     
-    private function orderTabContent($order){
-        $this->context->controller->addCSS($this->_path.'themes/default/css/orderTabLabels.css');
-        $this->context->controller->addJS($this->_path.'themes/default/js/orderTabLabels.js');
+    private function orderTabContent($order)
+    {
+        $this->context->controller->addCSS($this->_path.'views/css/orderTabLabels.css');
+        $this->context->controller->addJS($this->_path.'views/js/orderTabLabels.js');
         
         $order_carrier = new OrderCarrier((int)$order->getIdOrderCarrier());
         $cart = new Cart((int)$order->id_cart);
@@ -350,7 +351,7 @@ class DpdCarrier extends CarrierModule
                 ,'order' => $order
                 ,'shop_info' => DpdHelper::getParcelShopInfo($cart)
                 ,'init_settings' => DpdHelper::getInitialOrderSettings($order)
-                ,'version' => substr(_PS_VERSION_, 0, 3)
+                ,'version' => Tools::substr(_PS_VERSION_, 0, 3)
             )
         );
         

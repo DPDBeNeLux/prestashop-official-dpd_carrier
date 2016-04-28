@@ -274,7 +274,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                 "The shopID provided wasn't proposed " .
                 "or is disabled since your lookup"
             );
-        }        
+        }
     }
     
     private function getProposedShop()
