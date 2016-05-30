@@ -56,7 +56,7 @@
     
     $(document).ready(function(){
         $('<div class="box dpd_selected_parcelshop"> \
-              <p>You have chosen to pickup your parcel in a DPD Pickup point:</p> \
+              <p>{/literal}{l s='You have chosen to pickup your parcel in a DPD Pickup point' mod='dpdcarrier'}{literal}:</p> \
               <h2>{/literal}{$shop_info['name']|escape:'htmlall':'UTF-8'}{literal}</h2> \
               <p>{/literal}{$shop_info['address']|escape:'htmlall':'UTF-8'}<br>{$shop_info['postcode']|escape:'htmlall':'UTF-8'} {$shop_info['city']|escape:'htmlall':'UTF-8'}{literal}</p> \
           </div>').insertAfter(selector);

@@ -142,17 +142,17 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         $result = $shopFinder->search($searchData);
 
         if ($result) {
-            $this->output['success']['dpd-locator'] = count($result->shops) . ' ' . $this->module->l('shops found');
+            $this->output['success']['dpd-locator'] = count($result->shops) . ' ' . $this->module->l('shops found', 'dpdshoplocator');
             $this->output['data']['center'] = $result->center;
             $counter = 0;
             foreach ($result->shops as $shopID => $shop) {
                 $logo = '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop.png';
-                $select_link = $this->module->l('Select this parcelshop.');
+                $select_link = $this->module->l('Select this parcelshop.', 'dpdshoplocator');
                 $active = true;
                 if (Country::getIsoById($deliveryAddress->id_country) != $shop->isoAlpha2) {
                     $shopID = -1;
                     $logo = '/modules/' . $this->module->name . '/lib/DIS/templates/img/icon_parcelshop_na.png';
-                    $select_link = $this->module->l('Please use a delivery address.');
+                    $select_link = $this->module->l('Please use a delivery address.', 'dpdshoplocator');
                     $active = false;
                 } else {
                     if ($counter == 0) {
@@ -189,7 +189,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
                             ,'y' => 0
                         )
                     )
-                    ,'infoLink' => $this->module->l('Show more information')
+                    ,'infoLink' => $this->module->l('Show more information', 'dpdshoplocator')
                     ,'selectLink' => $select_link
                 );
                 $counter++;
@@ -199,7 +199,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             $cookie->last_search = serialize($searchData);
             $cookie->write();
         } else {
-            $this->output['warning']['dpd-locator'] = $this->module->l('No shops found');
+            $this->output['warning']['dpd-locator'] = $this->module->l('No shops found', 'dpdshoplocator');
         }
     }
     
@@ -233,13 +233,22 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
     private function getShopInfo()
     {
         $shop = $this->getProposedShop();
+        $weekdayTranslation = array(
+          'Monday' => $this->module->l('Monday', 'dpdshoplocator'),
+          'Tuesday' => $this->module->l('Tuesday', 'dpdshoplocator'),
+          'Wednesday' => $this->module->l('Wednesday', 'dpdshoplocator'),
+          'Thursday' => $this->module->l('Thursday', 'dpdshoplocator'),
+          'Friday' => $this->module->l('Friday', 'dpdshoplocator'),
+          'Saturday' => $this->module->l('Saturday', 'dpdshoplocator'),
+          'Sunday' => $this->module->l('Sunday', 'dpdshoplocator')
+        );
         
         if ($shop) {
             $this->output['data'] = '<div><table>';
             
             foreach ($shop->openingHours as $day) {
                 $this->output['data'] .=
-                    '<tr><td>' . $day->weekday .
+                    '<tr><td>' . $weekdayTranslation[$day->weekday] .
                     '</td><td>' . $day->openMorning .
                     '</td><td>' . $day->closeMorning .
                     '</td><td>' . $day->openAfternoon .
@@ -252,6 +261,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
             $this->output['error']['unknown-shopid'] = $this->module->l(
                 "The shopID provided wasn't proposed " .
                 "or is disabled since your lookup"
+                , 'dpdshoplocator'
             );
         }
     }
@@ -263,16 +273,17 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         if ($shop) {
             $this->saveShop($shop);
             
-            $this->output['data'] = '<p>' . $this->module->l('You have chosen') .
+            $this->output['data'] = '<p>' . $this->module->l('You have chosen', 'dpdshoplocator') .
                 ': <strong>' . $shop->company . '</strong>' .
-                '<br>' . $this->module->l('Located at') . ': ' . $shop->street . ' ' . $shop->houseNo .
+                '<br>' . $this->module->l('Located at', 'dpdshoplocator') . ': ' . $shop->street . ' ' . $shop->houseNo .
                 ', ' . $shop->zipCode  . ' ' . $shop->city . '</p>' .
                 '<a href="#" onclick="javascript:showLocator();return false;">' .
-                $this->module->l('Click here to alter your choice') . '</a>';
+                $this->module->l('Click here to alter your choice', 'dpdshoplocator') . '</a>';
         } else {
             $this->output['error']['unknown-shopid'] = $this->module->l(
                 "The shopID provided wasn't proposed " .
                 "or is disabled since your lookup"
+                , 'dpdshoplocator'
             );
         }
     }
@@ -280,7 +291,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
     private function getProposedShop()
     {
         if (!(bool)Tools::getIsset('dpdshopid') || (string)Tools::getValue('dpdshopid') =='') {
-            $this->output['validation']['dpdshopid'] = $this->module->l('No parcelshop selection found.');
+            $this->output['validation']['dpdshopid'] = $this->module->l('No parcelshop selection found.', 'dpdshoplocator');
         }
         
         if (count($this->output['validation']) == 0) {
