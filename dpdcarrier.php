@@ -62,6 +62,7 @@ class DpdCarrier extends CarrierModule
         ,'displayPayment'
         ,'displayBeforePayment'
         ,'displayOrderConfirmation'
+        ,'displayOrderDetail'
         ,'displayAdminOrder'
         ,'displayAdminOrderTabOrder'
         ,'displayAdminOrderContentOrder'
@@ -121,7 +122,7 @@ class DpdCarrier extends CarrierModule
         $this->loadHelper();
         DpdHelper::loadDis();
         
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6');
         $this->dependencies = array();
         $this->name = 'dpdcarrier';//DpdHelper::MODULENAME;
@@ -312,6 +313,22 @@ class DpdCarrier extends CarrierModule
             );
             
             return $this->display(__FILE__, '_frontOrderConfirmation.tpl');
+        }
+    }
+    
+    public function hookDisplayOrderDetail($params)
+    {
+        // TODO: check previous IDs from carrier too.
+        $currentPickupId = (int)(Configuration::get((string)DpdHelper::generateVariableName('PICKUP_ID')));
+        if ((int)($params['order']->id_carrier) == $currentPickupId) {
+            $cart = new Cart($params['order']->id_cart);
+            $this->context->smarty->assign(
+                array(
+                    'shop_info' => DpdHelper::getParcelShopInfo($cart)
+                )
+            );
+            
+            return $this->display(__FILE__, '_frontOpcShopConfirmation.tpl');
         }
     }
     

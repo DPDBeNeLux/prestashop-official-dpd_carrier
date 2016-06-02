@@ -430,7 +430,7 @@ class DpdHelper
                 
                 $max_weight=31.5;
                 if (isset($label_settings['dps']) && $label_settings['dps']) {
-                    $max_weight=21;
+                    $max_weight=20.0;
                 }
                 $auto_count=1;
                 $rest_weight=0;
@@ -604,13 +604,22 @@ class DpdHelper
                                     ,'sat' => isset($label_settings['sat']) && $label_settings['sat']
                                 );
                                 
+                                $used_weight = isset($label_settings['weight']) ? $label_settings['weight'] : 0;
+                                if ($auto_count > 1) {
+                                    if ((($i + 1) % $auto_count) != 0) {
+                                        $used_weight = $max_weight;
+                                    } else {
+                                        $used_weight = $rest_weight / 100;
+                                    }
+                                }
+                                
                                 Db::getInstance()->insert(
                                     'dpdcarrier_label',
                                     array(
                                         'id_order' => $order->id
                                         ,'parcel_number' => (string)$parcel_label_number
                                         ,'date' => $date
-                                        ,'weight' => isset($label_settings['weight']) ? $label_settings['weight'] : 0
+                                        ,'weight' => $used_weight
                                         ,'length' => isset($label_settings['length']) ? $label_settings['length'] : 0
                                         ,'height' => isset($label_settings['height']) ? $label_settings['height'] : 0
                                         ,'depth' => isset($label_settings['depth']) ? $label_settings['depth'] : 0
@@ -624,7 +633,7 @@ class DpdHelper
                                 $output[] = array(
                                     'parcel_number' => $parcel_label_number
                                     ,'date' => $date
-                                    ,'weight' => isset($label_settings['weight']) ? $label_settings['weight'] : 0
+                                    ,'weight' => $used_weight
                                     ,'length' => isset($label_settings['length']) ? $label_settings['length'] : 0
                                     ,'height' => isset($label_settings['height']) ? $label_settings['height'] : 0
                                     ,'depth' => isset($label_settings['depth']) ? $label_settings['depth'] : 0
