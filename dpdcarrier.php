@@ -121,7 +121,7 @@ class DpdCarrier extends CarrierModule
         $this->loadHelper();
         DpdHelper::loadDis();
         
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6');
         $this->dependencies = array();
         $this->name = 'dpdcarrier';//DpdHelper::MODULENAME;

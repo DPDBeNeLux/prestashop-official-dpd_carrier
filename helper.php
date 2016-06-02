@@ -382,6 +382,8 @@ class DpdHelper
                 $phone_number = isset($recipient_address->phone_mobile) && $recipient_address->phone_mobile != '' ?
                     $recipient_address->phone_mobile :
                     $recipient_address->phone;
+                    
+                $label_count = (int)$label_settings['count'];
                 
                 $shipment->request['order'] = array(
                     'generalShipmentData' => array(
@@ -426,9 +428,24 @@ class DpdHelper
                     $shipment->request['order']['parcels']['returns'] = true;
                 }
                 
+                $max_weight=31.5;
+                if (isset($label_settings['dps']) && $label_settings['dps']) {
+                    $max_weight=21;
+                }
+                $auto_count=1;
+                $rest_weight=0;
+                
                 if (isset($label_settings['weight']) && (float)$label_settings['weight'] != 0) {
+                    $weight_kg = (int)($label_settings['weight'] * self::getWeightMultiplier());
                     $weight = (int)($label_settings['weight'] * (100 / self::getWeightMultiplier()));
-                    $shipment->request['order']['parcels']['weight'] = $weight;
+                    
+                    $auto_count = ceil($weight_kg / $max_weight);
+                    $rest_weight = $weight;
+                    if($auto_count > 1) {
+                        $rest_weight = $weight - ( ($auto_count - 1) * $max_weight * 100 );
+                    }
+                    
+                    $shipment->request['order']['parcels']['weight'] = $rest_weight;
                 }
                 
                 if (isset($label_settings['length']) && $label_settings['length'] != 0
@@ -461,8 +478,6 @@ class DpdHelper
                     $shipment->request['order']['parcels']['volume'] = $length . $height . $depth;
                 }
                 
-                $label_count = (int)$label_settings['count'];
-                
                 if (isset($label_settings['cod'])  && $label_settings['cod']
                     && isset($label_settings['value']) && (float)$label_settings['value'] > 0) {
                     $currency = new Currency($order->id_currency);
@@ -470,17 +485,21 @@ class DpdHelper
                         'amount' => (int)((float)$label_settings['value'] * 100)
                         ,'currency' => Tools::strtoupper($currency->iso_code)
                         ,'inkasso' => 0
-                        
                     );
                     
-                    if ($label_count > 1) {
+                    if ($label_count > 1 || $auto_count > 1) {
                         $parcel_data = $shipment->request['order']['parcels'];
                         $shipment->request['order']['parcels'] = array();
-                        for ($i = 0; $i < $label_count; $i++) {
-                            $shipment->request['order']['parcels'][] = self::copyArray($parcel_data);
+                        
+                        for ($i = 0; $i < ( $label_count * $auto_count ); $i++) {
+                            $shipment->request['order']['parcels'][$i] = self::copyArray($parcel_data);
+                            if ((($i + 1) % $auto_count) != 0) {
+                                $shipment->request['order']['parcels'][$i]['weight'] = ($max_weight * 100);
+                            }
                         }
                         
                         $label_count = 1;
+                        $auto_count = 1;
                     }
                 }
                 
@@ -516,7 +535,16 @@ class DpdHelper
                 }
                 
                 $output = array();
-                for ($i = 0; $i < $label_count; $i++) {
+                for ($i = 0; $i < ($label_count * $auto_count); $i++) {
+                    
+                    if ($auto_count > 1) {
+                        if ((($i + 1) % $auto_count) != 0) {
+                            $shipment->request['order']['parcels']['weight'] = $max_weight * 100;
+                        } else {
+                            $shipment->request['order']['parcels']['weight'] = $rest_weight;
+                        }
+                    }
+                    
                     try {
                         $shipment->send();
                     } catch (Exception $e) {
