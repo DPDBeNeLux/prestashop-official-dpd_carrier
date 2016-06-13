@@ -260,8 +260,8 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         } else {
             $this->output['error']['unknown-shopid'] = $this->module->l(
                 "The shopID provided wasn't proposed " .
-                "or is disabled since your lookup"
-                , 'dpdshoplocator'
+                "or is disabled since your lookup",
+                'dpdshoplocator'
             );
         }
     }
@@ -282,8 +282,8 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         } else {
             $this->output['error']['unknown-shopid'] = $this->module->l(
                 "The shopID provided wasn't proposed " .
-                "or is disabled since your lookup"
-                , 'dpdshoplocator'
+                "or is disabled since your lookup",
+                'dpdshoplocator'
             );
         }
     }
