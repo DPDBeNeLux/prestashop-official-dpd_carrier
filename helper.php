@@ -441,7 +441,7 @@ class DpdHelper
                     
                     $auto_count = ceil($weight_kg / $max_weight);
                     $rest_weight = $weight;
-                    if($auto_count > 1) {
+                    if ($auto_count > 1) {
                         $rest_weight = $weight - ( ($auto_count - 1) * $max_weight * 100 );
                     }
                     
