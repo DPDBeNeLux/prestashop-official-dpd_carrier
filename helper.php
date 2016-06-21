@@ -387,32 +387,32 @@ class DpdHelper
                 
                 $shipment->request['order'] = array(
                     'generalShipmentData' => array(
-                        'mpsCustomerReferenceNumber1' => $order->reference
+                        'mpsCustomerReferenceNumber1' => self::entities_to_unicode($order->reference)
                         ,'sendingDepot' => $disLogin->getDepot()
                         ,'product' => 'CL'
                         ,'sender' => array(
-                            'name1' => $sender_address->company
-                            ,'street' => $sender_address->address1
+                            'name1' => self::entities_to_unicode($sender_address->company)
+                            ,'street' => self::entities_to_unicode($sender_address->address1)
                             ,'country' => $sender_address->iso_A2
                             ,'zipCode' => $sender_address->postcode
-                            ,'city' => $sender_address->city
+                            ,'city' => self::entities_to_unicode($sender_address->city)
                         )
                         ,'recipient' => array(
-                            'name1' => Tools::substr(
+                            'name1' => self::entities_to_unicode(Tools::substr(
                                 $recipient_address->firstname . ' ' .
                                 $recipient_address->lastname . ' ' .
                                 $recipient_address->company,
                                 0,
                                 35
-                            )
-                            ,'name2' => $recipient_address->address2
-                            ,'street' => $recipient_address->address1
+                            ))
+                            ,'name2' => self::entities_to_unicode($recipient_address->address2)
+                            ,'street' => self::entities_to_unicode($recipient_address->address1)
                             ,'country' => Country::getIsoById($recipient_address->id_country)
                             ,'zipCode' => $recipient_address->postcode
-                            ,'city' => $recipient_address->city
-                            ,'contact' => $phone_number
-                            ,'phone' =>$phone_number
-                            ,'email' => $recipient_customer->email
+                            ,'city' => self::entities_to_unicode($recipient_address->city)
+                            ,'contact' => self::entities_to_unicode($phone_number)
+                            ,'phone' => self::entities_to_unicode($phone_number)
+                            ,'email' => self::entities_to_unicode($recipient_customer->email)
                         )
                     )
                     ,'productAndServiceData' => array(
@@ -424,7 +424,7 @@ class DpdHelper
                 
                 if (isset($label_settings['return_ref']) && (string)$label_settings['return_ref'] != '') {
                     //TODO: Add substring to cut off.
-                    $shipment->request['order']['parcels']['customerReferenceNumber2'] = $label_settings['return_ref'];
+                    $shipment->request['order']['parcels']['customerReferenceNumber2'] = self::entities_to_unicode($label_settings['return_ref']);
                     $shipment->request['order']['parcels']['returns'] = true;
                 }
                 
@@ -1015,4 +1015,11 @@ class DpdHelper
         
         return $result;
     }
+    
+    private function entities_to_unicode($str) {
+        $str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
+        $str = preg_replace_callback("/(&#[0-9]+;)/", function($m) { return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); }, $str);
+        return $str;
+    }
+
 }
