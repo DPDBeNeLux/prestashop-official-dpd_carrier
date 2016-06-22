@@ -436,7 +436,7 @@ class DpdHelper
                 $rest_weight=0;
                 
                 if (isset($label_settings['weight']) && (float)$label_settings['weight'] != 0) {
-                    $weight_kg = (int)($label_settings['weight'] * self::getWeightMultiplier());
+                    $weight_kg = (float)($label_settings['weight'] * self::getWeightMultiplier());
                     $weight = (int)($label_settings['weight'] * (100 / self::getWeightMultiplier()));
                     
                     $auto_count = ceil($weight_kg / $max_weight);
@@ -905,6 +905,7 @@ class DpdHelper
                 $weight_multiplier = 1000;
                 break;
             case 'Kg':
+            case 'kg':
                 $weight_multiplier = 1;
                 break;
             case 'lbs':
