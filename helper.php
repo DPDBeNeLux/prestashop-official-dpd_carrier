@@ -1016,7 +1016,7 @@ class DpdHelper
         return $result;
     }
     
-    private function entities_to_unicode($str) {
+    public static function entities_to_unicode($str) {
         $str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
         $str = preg_replace_callback("/(&#[0-9]+;)/", function($m) { return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); }, $str);
         return $str;
