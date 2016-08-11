@@ -821,7 +821,7 @@ class DpdHelper
             ->from('dpdcarrier_label')
             ->where('id_order = ' . $order->id);
         
-        $data = Db::getInstance()->query($query)->fetchAll(PDO::FETCH_ASSOC);
+        $data = Db::getInstance()->query($query);
         $result = array();
         if ($data) {
             foreach ($data as $key => $row) {
@@ -868,7 +868,7 @@ class DpdHelper
             ->leftJoin('address', 'psa', 'pso.id_address_delivery = psa.id_address')
             ->where('parcel_number IN ' . $list);
         
-        $data = Db::getInstance()->query($query)->fetchAll(PDO::FETCH_ASSOC);
+        $data = Db::getInstance()->query($query);
         
         $result = array();
         if ($data) {
