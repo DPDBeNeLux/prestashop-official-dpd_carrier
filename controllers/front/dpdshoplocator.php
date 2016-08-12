@@ -74,6 +74,7 @@ class DpdCarrierDpdShopLocatorModuleFrontController extends ModuleFrontControlle
         $this->setTemplate('shop_locator.tpl');
         $this->display_header = false;
         $this->display_footer = false;
+        $this->js_files = array();
         parent::display();
     }
     
