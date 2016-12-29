@@ -64,6 +64,7 @@ class DisShipment
     
     $counter = 0;
     $stop = false;
+    $result = "";
     while($counter < 2 
       && !$stop)
     {
